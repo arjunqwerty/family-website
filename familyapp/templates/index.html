@@ -6,9 +6,13 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Document</title>
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+        <link rel="stylesheet" href="/static/extracoloum.css">
 		<style>
 			.btnstretch {
 				width: 100%;
+			}
+			.btn-default {
+				border: 1px solid #000;
 			}
 		</style>
     </head>
@@ -18,16 +22,22 @@
         <div class="text-center">
             <h1>TK Renganathan Relatives</h1>
         </div>
-		<h2 style="transform: translateX(2%);">Welcome {{session.name}}</h2>
-		<form action="/index" method="POST"><!--Change the position to right end-->
-			<label for="sorting">Sort by</label>
-			<select name="sort" id="sorting" onchange="submit()">
-				<option value="{{sort}}">{{sort}}</option>
-				<option value="Name">Name</option>
-				<option value="Phone">Phone Number</option>
-				<option value="Family Name">Family Name</option>
-			</select>
-		</form>
+		<div class="row">
+			<div class="col-xs-12 col-sm-12 col-md-12 col-lg-8 col-xl-8">
+				<h2 style="transform: translateX(2%);">Welcome {{session.name}}</h2>
+			</div>
+			<div class="col-xs-11 col-sm-11 col-md-11 col-lg-3 col-xl-3" align="right">
+				<form action="/index" method="POST" width="300px"><!--Change the position to right end-->
+					<label for="sorting">Sort by</label>
+					<select name="sort" id="sorting" onchange="submit()">
+						<option value="{{sort}}">{{sort}}</option>
+						<option value="Name">Name</option>
+						<option value="Phone">Phone Number</option>
+						<option value="Family Name">Family Name</option>
+					</select>
+				</form>
+			</div>
+		</div>
 		<table class="table table-striped">
 			<tr>
 				<th>S No</th>
@@ -35,7 +45,8 @@
 				<th>Address</th>
 				<th>Phone Number</th>
 				<th>Family Name</th>
-				<th><a href="/details/add" class="btn btn-info btnstretch">Add</a></th>
+				<!--<th><a href="/details/add" class="btn btn-info btnstretch">Add</a></th>-->
+				<th></th>
 			</tr>
 			{% for person in data %}
 				<tr>
@@ -44,7 +55,11 @@
 					<td>{{person.address}}</td>
 					<td>{{person.phone}}</td>
 					<td>{{person.familyname}}</td>
-					<td><a href="/details/edit/{{person.id}}" class="btn btn-default btnstretch">Edit</a></td>
+					{% if person.name == session.name %}
+						<td><a href="/details/edit/{{person.id}}" class="btn btn-default btnstretch">Edit</a></td>
+					{% else %}
+						<td></td>
+					{% endif %}
 				</tr>
 			{% endfor %}
 		</table>

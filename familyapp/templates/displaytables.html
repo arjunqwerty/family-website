@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<title>ZORG</title>
+		<link rel="icon" type="image/png" href="/static/Favicon.png">
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity = "sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin = "anonymous">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+		<style>
+			.btnstretch {
+				width: 100%;
+			}
+		</style>
+	</head>
+	<body>
+		{% include "_navbar.html" %}
+		{% include "_messages.html" %}
+		{% if registerdet != asdfljhj %}
+			<h1>Register Details</h1>
+			<table class="table table-striped">
+				<tr>
+					<th>ID</th>
+					<th>Identifier</th>
+					<th>Name</th>
+					<th>Password</th>
+				</tr>
+				{% for registerdet in registerdet %}
+					<tr>
+						<td>{{registerdet.id}}</td>
+						<td>{{registerdet.identifier}}</td>
+						<td>{{registerdet.name}}</td>
+						<td>{{registerdet.password}}</td>
+					</tr>
+				{% endfor %}
+			</table>
+		{% endif %}
+
+		{% if familydet != asdfljhj %}
+			<h1>Family Details</h1>
+			<table class="table table-striped">
+				<tr>
+					<th>ID</th>
+					<th>Identifier</th>
+					<th>Name</th>
+					<th>Address</th>
+					<th>Phone Number</th>
+					<th>Family Name</th>
+				</tr>
+				{% for familydet in familydet %}
+					<tr>
+						<td>{{familydet.id}}</td>
+						<td>{{familydet.identifier}}</td>
+						<td>{{familydet.name}}</td>
+						<td>{{familydet.address}}</td>
+						<td>{{familydet.phone}}</td>
+						<td>{{familydet.familyname}}</td>
+					</tr>
+				{% endfor %}
+			</table>
+		{% endif %}
+
+		{% if familynames != asdfljhj %}
+			<h1>Family Names Details</h1>
+			<table class="table table-striped">
+				<tr>
+					<th>ID</th>
+					<th>Name</th>
+				</tr>
+				{% for familynames in familynames %}
+					<tr>
+						<td>{{familynames.id}}</td>
+						<td>{{familynames.name}}</td>
+					</tr>
+				{% endfor %}
+			</table>
+		{% endif %}
+
+		<br>
+		<div class="text-center">
+			<a href="/admin/dashboard" class="btn btn-default btnstretch">Back</a>
+		</div>
+		<br>
+		<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+	</body>
+</html>
