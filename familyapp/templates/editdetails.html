@@ -6,41 +6,98 @@
 		<title>ZORG</title>
 		<link rel="icon" type="image/png" href="/static/Favicon.png">
 		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity = "sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin = "anonymous">
-        <link rel="stylesheet" href="/static/extracoloum.css">
-        <link rel="stylesheet" href="/static/details.css">
+        <link rel="stylesheet" href="/static/sixtyfoldcoloum.css">
 		<style>
 			.btnstretch {
 				width: 100%;
+			}
+			html, body {
+				min-height: 100%;
+			}
+			body, div, form, input, select, p {
+				padding: 0;
+				margin: 0;
+				outline: none;
+				font-family: Roboto, Arial, sans-serif;
+				font-size: 14px;
+				color: #666;
+			}
+			h1 {
+				margin: 0;
+				font-weight: 400;
+			}
+			form {
+				padding: 20px;
+			}
+			.width-option {
+				width: 100%;
+				padding: 5px;
+				vertical-align: middle;
+			}
+			input {
+				width: 100%;
+				padding: 5px;
+				margin-top: 2px;
+				margin-bottom: 2px;
+				vertical-align: middle;
+			}
+			.btn-default {
+				border: 1px solid #000;
 			}
 		</style>
 	</head>
 	<body>
 		{% include "_navbar.html" %}
         {% include "_messages.html" %}
-		<div class="padding text-center">
-			<form method="POST" action="/details/add">
-				<h1 class="text-center">Create an account</h1>
-				<div class="account-details text-center">
-					<div class="form-group" align="center"><!--name-->
-						<h4 class="right-heading" align="left">Name :</h4>
-						<input class="text" type="text" name="name" placeholder="{{profile.name}}">
+		<form method="POST" action="/details/edit">
+			<h1 style="text-align: center;">Edit your account</h1>
+			<div class="row">
+				<div class="col-xs-5 col-sm-5 col-md-5 col-lg-15 col-xl-15"></div>
+				<div class="col-xs-50 col-sm-50 col-md-50 col-lg-30 col-xl-30">
+					<div class="form-group"><!--address-->
+						<h4>Address :</h4>
+						<input class="text" type="text" style="width: 50%; margin-right: -4px;" name="housest" value="{{profile.housestreet}}">
+						<input class="text" type="text" style="width: 50%; margin-right: -4px;" name="locality" value="{{profile.neighbourhood}}">
+						<input class="text" type="text" style="width: 50%; margin-right: -4px;" name="city" value="{{profile.city}}">
+						<input class="text" type="text" style="width: 50%; margin-right: -4px;" name="state" value="{{profile.state}}">
+						<input class="text" type="text" style="width: 50%; margin-right: -4px;" name="pincode" value="{{profile.pincode}}">
 					</div>
-					<div class="form-group" align="center"><!--age-->
-						<h4 class="right-heading" align="left">Address :</h4>
-						<input class="text" type="text" name="address" placeholder="{{profile.address}}">
-					</div>
-					<div class="form-group" align="center"><!--salary-->
-						<h4 class="right-heading" align="left">Phone Number :</h4>
-						<input class="text" type="text" name="phone" placeholder="{{profile.phone}}">
-					</div>
-					<div class="form-group" align="center"><!--type-->
-						<h4 class="right-heading" align="left">Family Name :</h4>
-						<input class="text" type="text" name="familyname" placeholder="{{profile.familyname}}">
+					<div id="phone" class="form-group"><!--phone-->
+						<h4>Phone Number :</h4>
+						<input class="text" type="text" name="phone" style="display: none;" value="{{profile.phone}}">
 					</div>
 				</div>
-				<button type="submit" class="btn btn-primary" value="Submit">Submit</button>
-			</form>
-		</div>
+			</div>
+			<div style="text-align: center;">
+				<button class="btn btn-primary" type="submit" onclick="phoneNumberCollect()" value="Submit">Submit</button>
+			</div>
+			<div style="text-align: center;">
+				<a class="btn btn-default" href="/index">Back</a>
+			</div>
+		</form>
+		<script>
+			var phoneString = document.getElementById("phone").children.item(1).value;
+			var list = phoneString.split(", ");
+			for (let index = 0; index < list.length; index++) {
+				var x = document.createElement("INPUT");
+				x.setAttribute("class", "text");
+				x.setAttribute("type", "text");
+				x.setAttribute("value", list[index]);
+				x.setAttribute("required", "");
+				x.setAttribute("style", "width: 50%;")
+				document.getElementById("phone").appendChild(x);
+			}
+			function phoneNumberCollect() {
+				var phoneParent = document.getElementById("phone");
+				var last = phoneParent.children.length;
+				var combinedphone = phoneParent.children.item(2).value;
+				for (let index = 3; index < last; index++) {
+					combinedphone = combinedphone + ", " + phoneParent.children.item(index).value;
+				}
+				document.getElementById("phone").children.item(1).value = combinedphone;
+				alert(combinedphone);
+			}
+		</script>
 		<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>

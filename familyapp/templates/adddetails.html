@@ -6,51 +6,134 @@
 		<title>ZORG</title>
 		<link rel="icon" type="image/png" href="/static/Favicon.png">
 		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity = "sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin = "anonymous">
-        <link rel="stylesheet" href="/static/extracoloum.css">
-        <link rel="stylesheet" href="/static/details.css">
+        <link rel="stylesheet" href="/static/sixtyfoldcoloum.css">
 		<style>
 			.btnstretch {
 				width: 100%;
+			}
+			html, body {
+				min-height: 100%;
+			}
+			body, div, form, input, select, p {
+				padding: 0;
+				margin: 0;
+				outline: none;
+				font-family: Roboto, Arial, sans-serif;
+				font-size: 14px;
+				color: #666;
+			}
+			h1 {
+				margin: 0;
+				font-weight: 400;
+			}
+			form {
+				padding: 20px;
+			}
+			select {
+				height: 35px;
+				width: 100%;
+				padding: 5px;
+				vertical-align: middle;
+			}
+			input {
+				width: 100%;
+				padding: 5px;
+				margin-top: 2px;
+				margin-bottom: 2px;
+				vertical-align: middle;
+			}
+			.btn-default {
+				border: 1px solid #000;
 			}
 		</style>
 	</head>
 	<body>
 		{% include "_navbar.html" %}
         {% include "_messages.html" %}
-		<div class="padding text-center">
-			<form method="POST" action="/details/add">
-				<h1 class="text-center">Create an account</h1>
-				<div class="account-details text-center">
-					<div class="form-group" align="center"><!--name-->
-						<h4 class="right-heading" align="left">Name :</h4>
-						<input class="text" type="text" name="name" required="">
+		<form method="POST" action="/details/add">
+			<h1 style="text-align: center;">Create an account</h1>
+			<div class="row">
+				<div class="col-xs-5 col-sm-5 col-md-5 col-lg-15 col-xl-15"></div>
+				<div class="col-xs-50 col-sm-50 col-md-50 col-lg-30 col-xl-30">
+					<div class="form-group"><!--name-->
+						<h4>Name :</h4>
+						<select name="salutation" id="" style="width: 20%; margin-right: -4px;" required="">
+							<option value="Mr. ">Mr.</option>
+							<option value="Mrs. ">Mrs.</option>
+							<option value="Master. ">Master.</option>
+							<option value="Ms. ">Ms.</option>
+							<option value="Dr. ">Dr.</option>
+						</select>
+						<input class="text" type="text" style="width: 80%;" name="name" value="{{data.name}}" required="">
 					</div>
-					<div class="form-group" align="center"><!--age-->
-						<h4 class="right-heading" align="left">Address :</h4>
-						<input class="text" type="text" name="address" required="">
+					<div class="form-group"><!--address-->
+						<h4>Address :</h4>
+						<input class="text" type="text" style="width: 50%; margin-right: -4px;" name="housest" placeholder="House num, Street" value="{{data.housestreet}}" required="">
+						<input class="text" type="text" style="width: 50%; margin-right: -4px;" name="locality" placeholder="Locality" value="{{data.neighbourhood}}" required="">
+						<input class="text" type="text" style="width: 50%; margin-right: -4px;" name="city" placeholder="City" value="{{data.city}}" required="">
+						<input class="text" type="text" style="width: 50%; margin-right: -4px;" name="state" placeholder="State" value="{{data.state}}" required="">
+						<input class="text" type="text" style="width: 50%; margin-right: -4px;" name="pincode" placeholder="Pincode" value="{{data.pincode}}" required="">
 					</div>
-					<div class="form-group" align="center"><!--salary-->
-						<h4 class="right-heading" align="left">Phone Number :</h4>
-						<input class="text" type="text" name="phone" required="">
+					<div id="phone" class="form-group"><!--phone-->
+						<h4>Phone Number :</h4>
+						<input type="text" name="phone" value="{{phonenum}}" style="width: 50%;" readonly value="{{data.phone}}" required="">
+						<a href="#addphonenum" class="btn btn-default" data-toggle="tab" onclick="showPhoneInput.call(this, event)">Add Phone Number</a>
 					</div>
-					<div class="form-group" align="center"><!--type-->
-						<h4 class="right-heading" align="left">Family Name :</h4>
-						<select name="familyname">
+					<div id="datetime" class="form-group">
+						<h4>Date of Birth :</h4>
+						<input type="date" class="text" name="dob" value="{{data.dateofbirth}}" required="">
+					</div>
+					<div class="form-group"><!--familyname-->
+						<h4>Family Name :</h4>
+						<select name="familyname" onchange="showOtherInput.call(this, event)" onload="selectfamily('{{data.familyname}}')" required="">
 							<option value=""></option>
 							{% for familyname in familynames %}
-								<option value="{{familyname}}">{{familyname}}</option>
+								<option value="{{familyname.name}}">{{familyname.name}}</option>
 							{% endfor %}
-							<option onclick="showOtherInput()">Other</option>
+							<option value="other">Other</option>
 						</select>
-						<input id="otherinput" class="text" type="text" name="familyname" style="display: none;" required="">
+					</div>
+					<div id="otherinput" class="form-group" style="display: none;">
+						<h6>Enter Family Name</h6>
+						<input class="text" type="text" name="otherfamilyname" value="">
 					</div>
 				</div>
-				<button type="submit" class="btn btn-primary" value="Submit">Submit</button>
-			</form>
-		</div>
+				<div class="col-xs-5 col-sm-5 col-md-5 col-lg-15 col-xl-15"></div>
+			</div>
+			<div style="text-align: center;">
+				<button type="submit" class="btn btn-primary text-center" onclick="phoneNumberCollect()" value="Submit">Submit</button>
+			</div>
+		</form>
 		<script>
-			function showOtherInput() {
-				document.getElementById("otherinput").style.display = "block";
+			var array = document.getElementsByName("familyname").item(0).children;
+			for (let index = 0; index < array.length; index++) {
+				if (array.item(index).value == "{{data.familyname}}") {
+					document.getElementsByName("familyname").item(0).children.item(index).selected = true;
+				}
+			}
+			function showOtherInput(event) {
+				if (this.options[this.selectedIndex].text == "Other") {
+					document.getElementById("otherinput").style.display = "block";
+				} else {
+					document.getElementById("otherinput").style.display = "none";
+				}
+			}
+			function showPhoneInput(event) {
+				var x = document.createElement("INPUT");
+				x.setAttribute("type", "tel");
+				x.setAttribute("pattern", "[+]{1}[0-9]{[1-5]} [0-9]{[10-15]}");
+				x.setAttribute("style", "width: 50%;")
+				x.setAttribute("required", "");
+				document.getElementById("phone").appendChild(x);
+			}
+			function phoneNumberCollect() {
+				var phoneParent = document.getElementById("phone");
+				var last = phoneParent.children.length;
+				var combinedphone = phoneParent.children.item(1).value;
+				for (let index = 3; index < last; index++) {
+					combinedphone = combinedphone + ", " + phoneParent.children.item(index).value;
+				}
+				document.getElementById("phone").children.item(1).value = combinedphone;
 			}
 		</script>
 		<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>

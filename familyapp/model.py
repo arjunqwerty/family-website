@@ -4,27 +4,39 @@ class RegisterDetails(db.Model):
     __tablename__ = "register"
     id = db.Column(db.Integer, primary_key = True)
     name = db.Column(db.String(200))
+    phone = db.Column(db.String(20))
     password = db.Column(db.String(20))
-    identifier = db.Column(db.String(10))
+    approval = db.Column(db.String(10))
 
-    def __init__(self, name, password, identifier):
+    def __init__(self, name, phone, password, approval):
         self.name = name
+        self.phone = phone
         self.password = password
-        self.identifier = identifier
+        self.approval = approval
 
-class FamilyDetails(db.Model):
-    __tablename__ = "address"
+class FamilyDetails(db.Model):### dob, salutation(Mr, Mrs, Ms, Dr), extra phone numbers, alias name
+    __tablename__ = "details"
     id = db.Column(db.Integer, primary_key = True)
-    identifier = db.Column(db.String(10))
+    salutation = db.Column(db.String(10))
     name = db.Column(db.String(200))
-    address = db.Column(db.Text())
+    dateofbirth = db.Column(db.Date())
+    housestreet = db.Column(db.String(50))
+    neighbourhood = db.Column(db.String(50))
+    city = db.Column(db.String(50))
+    state = db.Column(db.String(50))
+    pincode = db.Column(db.String(10))
     phone = db.Column(db.String(50))
     familyname = db.Column(db.String(200))
 
-    def __init__(self, identifier, name, address, phone, familyname):
-        self.identifier = identifier
+    def __init__(self, salutation, name, dateofbirth, housestreet, neighbourhood, city, state, pincode, phone, familyname):
+        self.salutation = salutation
         self.name = name
-        self.address = address
+        self.dateofbirth = dateofbirth
+        self.housestreet = housestreet
+        self.neighbourhood = neighbourhood
+        self.city = city
+        self.state = state
+        self.pincode = pincode
         self.phone = phone
         self.familyname = familyname
 

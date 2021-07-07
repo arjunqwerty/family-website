@@ -9,8 +9,12 @@
     </head>
     <body>
         {% include "_navbar.html" %}
+        {% include "_messages.html" %}
         <div class="text-center">
             <h1>TK Renganathan Relatives</h1>
+        </div>
+        <div align="right">
+            <a href="/admin/approval/none/none" class="btn btn-primary">Approval</a>
         </div>
         <table class="table table-striped">
             <tr>
@@ -28,14 +32,7 @@
                 <td><a href="/admin/table/display/All" class="btn btn-primary btnstretch">All</a></td>
             </tr>
             <tr>
-                <td>Default Table</td><!--Have to do python-->
-                <td><a href="/admin/table/default/1" class="btn btn-primary btnstretch">Register</a></td>
-                <td><a href="/admin/table/default/2" class="btn btn-primary btnstretch">Details</a></td>
-                <td><a href="/admin/table/default/3" class="btn btn-primary btnstretch">Family Name</a></td>
-                <td><a href="/admin/table/default/All" class="btn btn-primary btnstretch">All</a></td>
-            </tr>
-            <tr>
-                <td>Delete Table</td>
+                <td>Delete/Default Table</td>
                 <td><a href="/admin/table/delete/1" class="btn btn-primary btnstretch">Register</a></td>
                 <td><a href="/admin/table/delete/2" class="btn btn-primary btnstretch">Details</a></td>
                 <td><a href="/admin/table/delete/3" class="btn btn-primary btnstretch">Family Name</a></td>
@@ -43,20 +40,20 @@
             </tr>
             <tr>
                 <td>Delete Table Rows</td>
-                <td><a href="/admin/table/delete/row/1" class="btn btn-primary btnstretch">Register</a></td>
-                <td><a href="/admin/table/delete/row/2" class="btn btn-primary btnstretch">Details</a></td>
-                <td><a href="/admin/table/delete/row/3" class="btn btn-primary btnstretch">Family Name</a></td>
-                <td><a href="/admin/table/delete/row/All" class="btn btn-primary btnstretch">All</a></td>
+                <td><a href="/admin/table/row/delete/1" class="btn btn-primary btnstretch">Register</a></td>
+                <td><a href="/admin/table/row/delete/2" class="btn btn-primary btnstretch">Details</a></td>
+                <td><a href="/admin/table/row/delete/3" class="btn btn-primary btnstretch">Family Name</a></td>
+                <td><a href="/admin/table/row/delete/All" class="btn btn-primary btnstretch">All</a></td>
             </tr>
             <tr>
-                <td>Add Table Rows</td>
+                <td>Add Table Rows !</td>
                 <td><a href="/admin/table/row/add/1" class="btn btn-primary btnstretch">Register</a></td>
                 <td><a href="/admin/table/row/add/2" class="btn btn-primary btnstretch">Details</a></td>
                 <td><a href="/admin/table/row/add/3" class="btn btn-primary btnstretch">Family Name</a></td>
                 <td></td>
             </tr>
             <tr>
-                <td>Edit Table Rows</td>
+                <td>Edit Table Rows !</td>
                 <td><a href="/admin/table/row/show/1" class="btn btn-primary btnstretch">Register</a></td>
                 <td><a href="/admin/table/row/show/2" class="btn btn-primary btnstretch">Details</a></td>
                 <td><a href="/admin/table/row/show/3" class="btn btn-primary btnstretch">Family Name</a></td>

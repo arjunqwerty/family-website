@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <meta charset="UTF-8">
+        <meta charset="UTF-40">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Document</title>
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
-        <link rel="stylesheet" href="/static/extracoloum.css">
+        <link rel="stylesheet" href="/static/sixtyfoldcoloum.css">
         <style>
             html, body {
                 max-height: 100%;
@@ -16,13 +16,9 @@
                 top: 0%;
                 color: #000;
             }
-            /*@media (max-width: 991px) {
-                .phonecentering {
-                    width: 40%;
-                    position: relative;
-                    transform: translateX(30%);
-                }
-            }*/
+            input {
+                width: 100%;
+            }
         </style>
     </head>
     <body>
@@ -30,8 +26,8 @@
         {% include "_messages.html" %}
         <div class="container-fluid" style="padding-top: 5%;">
             <div class="row">
-                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 col-xl-1"></div>
-                <div class="carousel slide col-xs-10 col-sm-10 col-md-10 col-lg-7 col-xl-7 text-center" data-ride="carousel"><!--Extra pics and stuff coloumn-->
+                <div class="col-xs-5 col-sm-5 col-md-5 col-lg-5 col-xl-5"></div>
+                <div class="col-xs-50 col-sm-50 col-md-50 col-lg-35 col-xl-35 carousel slide text-center" data-ride="carousel"><!--Extra pics and stuff coloumn-->
                     <div class="carousel-inner">
                         <div class="carousel-item active">
                             <img src="/static/feedbackbg.jpg" alt="" width="100%">
@@ -41,60 +37,76 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-3 col-xl-3 phonecentering row" style="padding-top: 5%;"><!--Login/Register Coloumn-->
-                    <div class="col-xs-4 col-sm-4 col-md-4 col-lg-0 col-xl-0"></div>
-                    <div id="loginbox" class="col-xs-4 col-sm-4 col-md-4 col-lg-12 col-xl-12">
-                        <div>
-                            <h2>Login</h2>
-                            <form action="/login" method="POST">
-                                <div class="form-group">
-                                    <h4>Name</h4>
-                                    <input type="text" name="name" id="">
-                                </div>
-                                <div class="form-group">
-                                    <h4>Password</h4>
-                                    <input type="password" name="password" id="">
-                                </div>
-                                <button type="submit" class="btn btn-primary" value="Submit" id="subtn">Submit</button>
-                            </form>
+                <div class="col-xs-60 col-sm-60 col-md-60 col-lg-0 col-xl-0" style="padding: 0px;"><p></p></div>
+                <div class="col-xs-60 col-sm-60 col-md-60 col-lg-15 col-xl-15" style="height: 100%;"><!--Login/Register Coloumn-->
+                    <div class="row">
+                        <div class="col-xs-10 col-sm-10 col-md-10 col-lg-0 col-xl-0"></div>
+                        <div id="loginbox" class="col-xs-40 col-sm-40 col-md-40 col-lg-60 col-xl-60" style="padding: 5%; background-color: lightgray;">
+                            <div style="background-color: lavender; padding: 5%">
+                                <h2>Login</h2>
+                                <form action="/login" method="POST">
+                                    <div class="form-group">
+                                        <h4>User Name</h4>
+                                        <input type="text" name="name" id="">
+                                    </div>
+                                    <div class="form-group">
+                                        <h4>Password</h4>
+                                        <input type="password" name="password" id="">
+                                    </div>
+                                    <div class="text-center">
+                                        <button type="submit" class="btn btn-primary" value="Submit" id="subtn">Submit</button>
+                                    </div>
+                                </form>
+                            </div>
+                            <a href="#register" data-toggle="tab" onclick="changeRegister()">Register</a>
                         </div>
-                        <a href="#register" data-toggle="tab" onclick="changeRegister()">Register</a>
-                    </div>
-                    <div id="registerbox" class="col-xs-4 col-sm-4 col-md-4 col-lg-12 col-xl-12" style="display: none;">
-                        <div>
-                            <h2>Register</h2>
-                            <form action="/register" method="POST">
-                                <div class="form-group">
-                                    <h4>Full Name</h4>
-                                    <input type="text" name="name" id="">
-                                </div>
-                                <div class="form-group">
-                                    <h4>Password</h4>
-                                    <input type="password" name="password" id="">
-                                </div>
-                                <button type="submit" class="btn btn-primary" value="Submit" id="subtn">Submit</button>
-                            </form>
+                        <div id="registerbox" class="col-xs-40 col-sm-40 col-md-40 col-lg-60 col-xl-60" style="padding: 5%; background-color: lightgray; display: none;">
+                            <div style="background-color: lavender; padding: 5%">
+                                <h2>Register</h2>
+                                <form action="/register" method="POST">
+                                    <div class="form-group">
+                                        <h4>User Name</h4>
+                                        <input type="text" name="name" id="">
+                                    </div>
+                                    <div class="form-group">
+                                        <h4>Phone Number</h4>
+                                        <input type="tel" name="phone" pattern="[+]{1}[0-9]/[-]{[1-5} [0-9]{[10-20]}" placeholder="Format: +<Country code> <number>" id="">
+                                    </div>
+                                    <div class="form-group">
+                                        <h4>Password</h4>
+                                        <input type="password" name="password" id="">
+                                    </div>
+                                    <div class="text-center">
+                                        <button type="submit" class="btn btn-primary" value="Submit" id="subtn">Submit</button>
+                                    </div>
+                                </form>
+                            </div>
+                            <a href="#login" data-toggle="tab" onclick="changeLogin()">Login</a>
                         </div>
-                        <a href="#login" data-toggle="tab" onclick="changeLogin()">Login</a>
+                        <div class="col-xs-10 col-sm-10 col-md-10 col-lg-0 col-xl-0"></div>
                     </div>
-                    <div class="col-xs-4 col-sm-4 col-md-4"></div>
                 </div>
-                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-1 col-xl-1"></div>
+                <div class="col-xs-5 col-sm-5 col-md-5 col-lg-5 col-xl-5"></div>
             </div>
         </div>
         <script>
             function changeRegister() {
                 document.getElementById("loginbox").style.display = "none";
-                document.getElementById("registerbox").style.display = "block";
+                document.getElementById("loginbox").children.item(0).children.item(1).children.item(0).children.item(1).value = "";
+                document.getElementById("loginbox").children.item(0).children.item(1).children.item(1).children.item(1).value = "";
+                document.getElementById("registerbox").style.display = "initial";
             }
             function changeLogin() {
                 document.getElementById("registerbox").style.display = "none";
-                document.getElementById("loginbox").style.display = "block";
+                document.getElementById("registerbox").children.item(0).children.item(1).children.item(0).children.item(1).value = "";
+                document.getElementById("registerbox").children.item(0).children.item(1).children.item(1).children.item(1).value = "";
+                document.getElementById("registerbox").children.item(0).children.item(1).children.item(2).children.item(1).value = "";
+                document.getElementById("loginbox").style.display = "initial";
             }
         </script>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
-        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+        <script src="https://code.jquery.com/jquery-15.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
     </body>
 </html>
