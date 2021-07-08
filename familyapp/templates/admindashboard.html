@@ -6,6 +6,14 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Document</title>
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+        <style>
+			.btnstretch {
+				width: 100%;
+			}
+			.btn-default {
+				border: 1px solid #000;
+			}
+        </style>
     </head>
     <body>
         {% include "_navbar.html" %}
@@ -14,7 +22,7 @@
             <h1>TK Renganathan Relatives</h1>
         </div>
         <div align="right">
-            <a href="/admin/approval/none/none" class="btn btn-primary">Approval</a>
+            <a href="/admin/approval/none/none" class="btn btn-default">Approval</a>
         </div>
         <table class="table table-striped">
             <tr>
@@ -26,37 +34,36 @@
             </tr>
             <tr>
                 <td>Display Tables</td>
-                <td><a href="/admin/table/display/1" class="btn btn-primary btnstretch">Register</a></td>
-                <td><a href="/admin/table/display/2" class="btn btn-primary btnstretch">Details</a></td>
-                <td><a href="/admin/table/display/3" class="btn btn-primary btnstretch">Family Name</a></td>
-                <td><a href="/admin/table/display/All" class="btn btn-primary btnstretch">All</a></td>
+                <td><a href="/admin/table/display/1" class="btn btn-default btnstretch">Register</a></td>
+                <td><a href="/admin/table/display/2" class="btn btn-default btnstretch">Details</a></td>
+                <td><a href="/admin/table/display/3" class="btn btn-default btnstretch">Family Name</a></td>
+                <td><a href="/admin/table/display/All" class="btn btn-default btnstretch">All</a></td>
             </tr>
             <tr>
                 <td>Delete/Default Table</td>
-                <td><a href="/admin/table/delete/1" class="btn btn-primary btnstretch">Register</a></td>
-                <td><a href="/admin/table/delete/2" class="btn btn-primary btnstretch">Details</a></td>
-                <td><a href="/admin/table/delete/3" class="btn btn-primary btnstretch">Family Name</a></td>
-                <td><a href="/admin/table/delete/All" class="btn btn-primary btnstretch">All</a></td>
+                <td><a href="/admin/table/delete/1" class="btn btn-default btnstretch">Register</a></td>
+                <td><a href="/admin/table/delete/2" class="btn btn-default btnstretch">Details</a></td>
+                <td><a href="/admin/table/delete/3" class="btn btn-default btnstretch">Family Name</a></td>
+                <td><a href="/admin/table/delete/All" class="btn btn-default btnstretch">All</a></td>
             </tr>
             <tr>
                 <td>Delete Table Rows</td>
-                <td><a href="/admin/table/row/delete/1" class="btn btn-primary btnstretch">Register</a></td>
-                <td><a href="/admin/table/row/delete/2" class="btn btn-primary btnstretch">Details</a></td>
-                <td><a href="/admin/table/row/delete/3" class="btn btn-primary btnstretch">Family Name</a></td>
-                <td><a href="/admin/table/row/delete/All" class="btn btn-primary btnstretch">All</a></td>
+                <td><a href="/admin/table/row/delete/1" class="btn btn-default btnstretch">Register</a></td>
+                <td><a href="/admin/table/row/delete/2" class="btn btn-default btnstretch">Details</a></td>
+                <td><a href="/admin/table/row/delete/3" class="btn btn-default btnstretch">Family Name</a></td>
+                <td><a href="/admin/table/row/delete/All" class="btn btn-default btnstretch">All</a></td>
             </tr>
             <tr>
                 <td>Add Table Rows !</td>
-                <td><a href="/admin/table/row/add/1" class="btn btn-primary btnstretch">Register</a></td>
-                <td><a href="/admin/table/row/add/2" class="btn btn-primary btnstretch">Details</a></td>
-                <td><a href="/admin/table/row/add/3" class="btn btn-primary btnstretch">Family Name</a></td>
+                <td colspan="2"><a href="/admin/table/row/add/1and2" class="btn btn-default btnstretch">Register & Details</a></td>
+                <td><a href="/admin/table/row/add/3" class="btn btn-default btnstretch">Family Name</a></td>
                 <td></td>
             </tr>
             <tr>
                 <td>Edit Table Rows !</td>
-                <td><a href="/admin/table/row/show/1" class="btn btn-primary btnstretch">Register</a></td>
-                <td><a href="/admin/table/row/show/2" class="btn btn-primary btnstretch">Details</a></td>
-                <td><a href="/admin/table/row/show/3" class="btn btn-primary btnstretch">Family Name</a></td>
+                <td><a href="/admin/table/row/show/1" class="btn btn-default btnstretch">Register</a></td>
+                <td><a href="/admin/table/row/show/2" class="btn btn-default btnstretch">Details</a></td>
+                <td><a href="/admin/table/row/show/3" class="btn btn-default btnstretch">Family Name</a></td>
                 <td></td>
             </tr>
         </table>

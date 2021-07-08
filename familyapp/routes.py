@@ -33,18 +33,8 @@ def register():
         name = request.form["name"]
         phone = request.form["phone"]
         password = request.form["password"]
-        z = True
-        code = []
-        details = db.session.query(FamilyDetails).all()
-        for detail in details:
-            code.append(detail.id)
-        while z == True:
-            randomcode = rd.randint(100000,1000000)
-            if randomcode not in code:
-                z = False
-                famdet = FamilyDetails("", "", "2000-01-01", "", "", "", "", "", phone, "")
-                db.session.add(famdet)
-                db.session.commit()
+        famdet = FamilyDetails("", "", "2000-01-01", "", "", "", "", "", phone, "")
+        db.session.add(famdet)
         data = RegisterDetails(name, phone, password, " ")
         db.session.add(data)
         db.session.commit()
@@ -256,18 +246,52 @@ def adminapproval(stat,idapprove):
 @app.route("/admin/table/display/<number>", methods = ["GET", "POST"])
 @is_admin
 def displaytables(number):
-    session["number"] = number
+    session["displaynumber"] = number
     if number == "All":
-        return render_template("displaytables.html", table="display/" + number, registerdet = db.session.query(RegisterDetails).order_by(RegisterDetails.id.asc()).all(), familydet = db.session.query(FamilyDetails).order_by(FamilyDetails.id.asc()).all(), familynames = db.session.query(FamilyNames).order_by(FamilyNames.id.asc()).all())
+        return render_template("admindisplaytables.html", table="display/" + number, registerdet = db.session.query(RegisterDetails).order_by(RegisterDetails.id.asc()).all(), familydet = db.session.query(FamilyDetails).order_by(FamilyDetails.id.asc()).all(), familynames = db.session.query(FamilyNames).order_by(FamilyNames.id.asc()).all())
     elif number == "1":
-        return render_template("displaytables.html", table="display/" + number, registerdet = db.session.query(RegisterDetails).order_by(RegisterDetails.id.asc()).all())
+        return render_template("admindisplaytables.html", table="display/" + number, registerdet = db.session.query(RegisterDetails).order_by(RegisterDetails.id.asc()).all())
     elif number == "2":
-        return render_template("displaytables.html", table="display/" + number, familydet = db.session.query(FamilyDetails).order_by(FamilyDetails.id.asc()).all())
+        return render_template("admindisplaytables.html", table="display/" + number, familydet = db.session.query(FamilyDetails).order_by(FamilyDetails.id.asc()).all())
     elif number == "3":
-        return render_template("displaytables.html", table="display/" + number, familynames = db.session.query(FamilyNames).order_by(FamilyNames.id.asc()).all())
+        return render_template("admindisplaytables.html", table="display/" + number, familynames = db.session.query(FamilyNames).order_by(FamilyNames.id.asc()).all())
     else:
         flash("No such table exists", "danger")
         return redirect(url_for("admindashboard"))
+
+@app.route("/admin/table/row/add/<number>", methods = ["GET", "POST"])
+def addtablerow(number):
+    session["addrownumber"] = number
+    if request.method == "POST":
+        if number == "1and2":
+           username = request.form["username"]
+           mainphone = request.form["mainphone"]
+           password = request.form["password"]
+           approval = request.form["approval"]
+           salutation = request.form["salutation"]
+           name = request.form["name"]
+           dateofbirth = request.form["dateofbirth"]
+           housestreet = request.form["housestreet"]
+           neighbourhood = request.form["neighbourhood"]
+           city = request.form["city"]
+           state = request.form["state"]
+           pincode = request.form["pincode"]
+           phone = request.form["phone"]
+           familyname = request.form["familyname"]
+           data = RegisterDetails(username, mainphone, password, approval)
+           db.session.add(data)
+           db.session.commit()
+           data = FamilyDetails(salutation, name, dateofbirth, housestreet, neighbourhood, city, state, pincode, phone, familyname)
+           db.session.add(data)
+           db.session.commit()
+           return redirect(url_for("admindashboard"))
+        elif number == "3":
+            familyname = request.form["familyname"]
+            data = FamilyNames(familyname)
+            db.session.add(data)
+            db.session.commit()
+            return redirect(url_for("admindashboard"))
+    return render_template("adminaddtable.html")
 
 @app.route("/admin/table/delete/<number>", methods = ["GET", "POST"])
 @is_admin
@@ -293,7 +317,7 @@ def deletetables(number):
 @app.route("/admin/table/row/delete/<number>", methods = ["GET", "POST"])
 @is_admin
 def deletetablerow(number):
-    session["number"] = number
+    session["deleterownumber"] = number
     if number == "All":
         if request.method == "POST":
             tableid = request.form["tableid"]
@@ -314,7 +338,7 @@ def deletetablerow(number):
             else:
                 flash("No such table exists", "danger")
                 return redirect(url_for("admindashboard"))
-        return render_template("displaytables.html", table = "row/delete/" + number, registerdet = db.session.query(RegisterDetails).order_by(RegisterDetails.id.asc()).all(), familydet = db.session.query(FamilyDetails).order_by(FamilyDetails.id.asc()).all(), familynames = db.session.query(FamilyNames).order_by(FamilyNames.id.asc()).all())
+        return render_template("admindisplaytables.html", table = "row/delete/" + number, registerdet = db.session.query(RegisterDetails).order_by(RegisterDetails.id.asc()).all(), familydet = db.session.query(FamilyDetails).order_by(FamilyDetails.id.asc()).all(), familynames = db.session.query(FamilyNames).order_by(FamilyNames.id.asc()).all())
     elif number == "1":
         if request.method == "POST":
             tableid = request.form["tableid"].split(":")
@@ -322,7 +346,7 @@ def deletetablerow(number):
             data = db.session.query(RegisterDetails).filter(RegisterDetails.id == chumma).first()
             db.session.delete(data)
             db.session.commit()
-        return render_template("displaytables.html", table = "row/delete/" + number, registerdet = db.session.query(RegisterDetails).order_by(RegisterDetails.id.asc()).all())
+        return render_template("admindisplaytables.html", table = "row/delete/" + number, registerdet = db.session.query(RegisterDetails).order_by(RegisterDetails.id.asc()).all())
     elif number == "2":
         if request.method == "POST":
             tableid = request.form["tableid"].split(":")
@@ -330,7 +354,7 @@ def deletetablerow(number):
             data = db.session.query(FamilyDetails).filter(FamilyDetails.id == chumma).first()
             db.session.delete(data)
             db.session.commit()
-        return render_template("displaytables.html", table = "row/delete/" + number, familydet = db.session.query(FamilyDetails).order_by(FamilyDetails.id.asc()).all())
+        return render_template("admindisplaytables.html", table = "row/delete/" + number, familydet = db.session.query(FamilyDetails).order_by(FamilyDetails.id.asc()).all())
     elif number == "3":
         if request.method == "POST":
             tableid = request.form["tableid"].split(":")
@@ -338,7 +362,7 @@ def deletetablerow(number):
             data = db.session.query(FamilyNames).filter(FamilyNames.id == chumma).first()
             db.session.delete(data)
             db.session.commit()
-        return render_template("displaytables.html", table = "row/delete/" + number, familynames = db.session.query(FamilyNames).order_by(FamilyNames.id.asc()).all())
+        return render_template("admindisplaytables.html", table = "row/delete/" + number, familynames = db.session.query(FamilyNames).order_by(FamilyNames.id.asc()).all())
     else:
         flash("No such table exists", "danger")
         return redirect(url_for("admindashboard"))

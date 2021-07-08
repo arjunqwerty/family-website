@@ -57,35 +57,35 @@
 				<div class="col-xs-50 col-sm-50 col-md-50 col-lg-30 col-xl-30">
 					<div class="form-group"><!--name-->
 						<h4>Name :</h4>
-						<select name="salutation" id="" style="width: 20%; margin-right: -4px;" required="">
+						<select name="salutation" style="width: 20%; margin-right: -4px;" required>
 							<option value="Mr. ">Mr.</option>
 							<option value="Mrs. ">Mrs.</option>
 							<option value="Master. ">Master.</option>
 							<option value="Ms. ">Ms.</option>
 							<option value="Dr. ">Dr.</option>
 						</select>
-						<input class="text" type="text" style="width: 80%;" name="name" value="{{data.name}}" required="">
+						<input class="text" type="text" style="width: 80%;" name="name" value="{{data.name}}" required>
 					</div>
 					<div class="form-group"><!--address-->
 						<h4>Address :</h4>
-						<input class="text" type="text" style="width: 50%; margin-right: -4px;" name="housest" placeholder="House num, Street" value="{{data.housestreet}}" required="">
-						<input class="text" type="text" style="width: 50%; margin-right: -4px;" name="locality" placeholder="Locality" value="{{data.neighbourhood}}" required="">
-						<input class="text" type="text" style="width: 50%; margin-right: -4px;" name="city" placeholder="City" value="{{data.city}}" required="">
-						<input class="text" type="text" style="width: 50%; margin-right: -4px;" name="state" placeholder="State" value="{{data.state}}" required="">
-						<input class="text" type="text" style="width: 50%; margin-right: -4px;" name="pincode" placeholder="Pincode" value="{{data.pincode}}" required="">
+						<input type="text" class="text" style="width: 50%; margin-right: -4px;" name="housest" placeholder="House num, Street" value="{{data.housestreet}}" required>
+						<input type="text" class="text" style="width: 50%; margin-right: -4px;" name="locality" placeholder="Locality" value="{{data.neighbourhood}}" required>
+						<input type="text" class="text" style="width: 50%; margin-right: -4px;" name="city" placeholder="City" value="{{data.city}}" required>
+						<input type="text" class="text" style="width: 50%; margin-right: -4px;" name="state" placeholder="State" value="{{data.state}}" required>
+						<input type="text" class="text" style="width: 50%; margin-right: -4px;" name="pincode" placeholder="Pincode" value="{{data.pincode}}" required>
 					</div>
 					<div id="phone" class="form-group"><!--phone-->
 						<h4>Phone Number :</h4>
-						<input type="text" name="phone" value="{{phonenum}}" style="width: 50%;" readonly value="{{data.phone}}" required="">
+						<input type="text" class="text" style="width: 50%;" name="phone" value="{{data.phone}}" required readonly>
 						<a href="#addphonenum" class="btn btn-default" data-toggle="tab" onclick="showPhoneInput.call(this, event)">Add Phone Number</a>
 					</div>
 					<div id="datetime" class="form-group">
 						<h4>Date of Birth :</h4>
-						<input type="date" class="text" name="dob" value="{{data.dateofbirth}}" required="">
+						<input type="date" class="text" name="dob" value="{{data.dateofbirth}}" required>
 					</div>
 					<div class="form-group"><!--familyname-->
 						<h4>Family Name :</h4>
-						<select name="familyname" onchange="showOtherInput.call(this, event)" onload="selectfamily('{{data.familyname}}')" required="">
+						<select name="familyname" onchange="showOtherInput.call(this, event)" required>
 							<option value=""></option>
 							{% for familyname in familynames %}
 								<option value="{{familyname.name}}">{{familyname.name}}</option>
@@ -121,7 +121,7 @@
 			function showPhoneInput(event) {
 				var x = document.createElement("INPUT");
 				x.setAttribute("type", "tel");
-				x.setAttribute("pattern", "[+]{1}[0-9]{[1-5]} [0-9]{[10-15]}");
+				x.setAttribute("pattern", "[+]{1}[0-9]/[-]{[1-5} [0-9]{[10-20]}");
 				x.setAttribute("style", "width: 50%;")
 				x.setAttribute("required", "");
 				document.getElementById("phone").appendChild(x);

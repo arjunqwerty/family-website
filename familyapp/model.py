@@ -14,7 +14,7 @@ class RegisterDetails(db.Model):
         self.password = password
         self.approval = approval
 
-class FamilyDetails(db.Model):### dob, salutation(Mr, Mrs, Ms, Dr), extra phone numbers, alias name
+class FamilyDetails(db.Model):
     __tablename__ = "details"
     id = db.Column(db.Integer, primary_key = True)
     salutation = db.Column(db.String(10))
