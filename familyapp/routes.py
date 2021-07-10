@@ -3,6 +3,7 @@ from functools import wraps
 from passlib.hash import sha256_crypt as sa
 import random as rd
 from sqlalchemy import asc, desc
+from sqlalchemy.sql.expression import table
 
 from familyapp import app, db
 from familyapp.model import RegisterDetails, FamilyDetails, FamilyNames
@@ -259,39 +260,149 @@ def displaytables(number):
         flash("No such table exists", "danger")
         return redirect(url_for("admindashboard"))
 
-@app.route("/admin/table/row/add/<number>", methods = ["GET", "POST"])
-def addtablerow(number):
-    session["addrownumber"] = number
+@app.route("/admin/table/row/add/<addrownumber>", methods = ["GET", "POST"])
+@is_admin
+def addtablerow(addrownumber):
+    session["number"] = addrownumber
     if request.method == "POST":
-        if number == "1and2":
-           username = request.form["username"]
-           mainphone = request.form["mainphone"]
-           password = request.form["password"]
-           approval = request.form["approval"]
-           salutation = request.form["salutation"]
-           name = request.form["name"]
-           dateofbirth = request.form["dateofbirth"]
-           housestreet = request.form["housestreet"]
-           neighbourhood = request.form["neighbourhood"]
-           city = request.form["city"]
-           state = request.form["state"]
-           pincode = request.form["pincode"]
-           phone = request.form["phone"]
-           familyname = request.form["familyname"]
-           data = RegisterDetails(username, mainphone, password, approval)
-           db.session.add(data)
-           db.session.commit()
-           data = FamilyDetails(salutation, name, dateofbirth, housestreet, neighbourhood, city, state, pincode, phone, familyname)
-           db.session.add(data)
-           db.session.commit()
-           return redirect(url_for("admindashboard"))
-        elif number == "3":
+        if addrownumber == "1and2":
+            username = request.form["username"]
+            mainphone = request.form["mainphone"]
+            password = request.form["password"]
+            approval = request.form["approval"]
+            salutation = request.form["salutation"]
+            name = request.form["name"]
+            dateofbirth = request.form["dateofbirth"]
+            housestreet = request.form["housestreet"]
+            neighbourhood = request.form["neighbourhood"]
+            city = request.form["city"]
+            state = request.form["state"]
+            pincode = request.form["pincode"]
+            phone = request.form["phone"]
+            familyname = request.form["familyname"]
+            data = RegisterDetails(username, mainphone, password, approval)
+            db.session.add(data)
+            db.session.commit()
+            data = FamilyDetails(salutation, name, dateofbirth, housestreet, neighbourhood, city, state, pincode, phone, familyname)
+            db.session.add(data)
+            db.session.commit()
+            return redirect(url_for("admindashboard"))
+        elif addrownumber == "3":
             familyname = request.form["familyname"]
             data = FamilyNames(familyname)
             db.session.add(data)
             db.session.commit()
             return redirect(url_for("admindashboard"))
     return render_template("adminaddtable.html")
+
+@app.route("/admin/table/row/edit/<edittablenumber>/<identifier>", methods = ["GET", "POST"])
+@is_admin
+def edittableshow(edittablenumber, identifier):
+    session["editnumber"] = edittablenumber
+    session["rowid"] = identifier
+    if edittablenumber == "1":
+        if identifier != "chooserow":
+            if request.method == "POST":
+                username = request.form["username"]
+                mainphone = request.form["mainphone"]
+                password = request.form["password"]
+                approval = request.form["approval"]
+                data = db.session.query(RegisterDetails).filter(RegisterDetails.id == identifier).first()
+                data.name = username
+                data.phone = mainphone
+                data.password = password
+                data.approval = approval
+                db.session.commit()
+            return render_template("adminedittable.html", table = "Row Edit", register = db.session.query(RegisterDetails).filter(RegisterDetails.id == identifier).first())
+        return render_template("admindisplaytables.html", table = "Row Edit", registerdet = db.session.query(RegisterDetails).order_by(RegisterDetails.id.asc()).all())
+    elif edittablenumber == "2":
+        if identifier != "chooserow":
+            if request.method == "POST":
+                salutation = request.form["salutation"]
+                name = request.form["name"]
+                dateofbirth = request.form["dateofbirth"]
+                housestreet = request.form["housestreet"]
+                neighbourhood = request.form["neighbourhood"]
+                city = request.form["city"]
+                state = request.form["state"]
+                pincode = request.form["pincode"]
+                phone = request.form["phone"]
+                familyname = request.form["familyname"]
+                data = db.session.query(FamilyDetails).filter(FamilyDetails.id == identifier).first()
+                data.salutation = salutation
+                data.name = name
+                data.dateofbirth = dateofbirth
+                data.housestreet = housestreet
+                data.neighbourhood = neighbourhood
+                data.city = city
+                data.state = state
+                data.pincode = pincode
+                data.phone = phone
+                data.familyname = familyname
+                db.session.commit()
+            return render_template("adminedittable.html", table = "Row Edit", familydet = db.session.query(FamilyDetails).filter(FamilyDetails.id == identifier).first())
+        return render_template("admindisplaytables.html", table = "Row Edit", familydet = db.session.query(FamilyDetails).order_by(FamilyDetails.id.asc()).all())
+    elif edittablenumber == "3":
+        if identifier != "chooserow":
+            if request.method == "POST":
+                familyname = request.form["familyname"]
+                data = db.session.query(FamilyNames).filter(FamilyDetails.id == identifier).first()
+                data.name = familyname
+                db.session.commit()
+            return render_template("adminedittable.html", table = "Row Edit", familynames = db.session.query(FamilyNames).filter(FamilyNames.id == identifier).first())
+        return render_template("admindisplaytables.html", table = "Row Edit", familynames = db.session.query(FamilyNames).order_by(FamilyNames.id.asc()).all())
+    else:
+        flash("No such table exists", "danger")
+        return redirect(url_for("admindashboard"))
+
+@app.route("/admin/table/row/delete/<deleterownumber>/<identifier>", methods = ["GET", "POST"])
+@is_admin
+def deletetablerow(deleterownumber, identifier):
+    if identifier == "chooserow":
+        session["deletenumber"] = deleterownumber
+    if session["deletenumber"] == "All":
+        if identifier != "chooserow":
+            if deleterownumber == "1":
+                data = db.session.query(RegisterDetails).filter(RegisterDetails.id == identifier).first()
+                db.session.delete(data)
+                db.session.commit()
+            elif deleterownumber == "2":
+                data = db.session.query(FamilyDetails).filter(FamilyDetails.id == identifier).first()
+                db.session.delete(data)
+                db.session.commit()
+            elif deleterownumber == "3":
+                data = db.session.query(FamilyNames).filter(FamilyNames.id == identifier).first()
+                db.session.delete(data)
+                db.session.commit()
+            else:
+                flash("No such table exists", "danger")
+                return redirect(url_for("admindashboard"))
+            return redirect(url_for("deletetablerow", deleterownumber = session["deletenumber"], identifier = "chooserow"))
+        return render_template("admindisplaytables.html", table = "Row Delete", registerdet = db.session.query(RegisterDetails).order_by(RegisterDetails.id.asc()).all(), familydet = db.session.query(FamilyDetails).order_by(FamilyDetails.id.asc()).all(), familynames = db.session.query(FamilyNames).order_by(FamilyNames.id.asc()).all())
+    if session["deletenumber"] == "1":
+        if identifier != "chooserow":
+            data = db.session.query(RegisterDetails).filter(RegisterDetails.id == identifier).first()
+            db.session.delete(data)
+            db.session.commit()
+            return redirect(url_for("deletetablerow", deleterownumber = deleterownumber, identifier = "chooserow"))
+        return render_template("admindisplaytables.html", table = "Row Delete", registerdet = db.session.query(RegisterDetails).order_by(RegisterDetails.id.asc()).all())
+    elif session["deletenumber"] == "2":
+        if identifier != "chooserow":
+            data = db.session.query(FamilyDetails).filter(FamilyDetails.id == identifier).first()
+            db.session.delete(data)
+            db.session.commit()
+            return redirect(url_for("deletetablerow", deleterownumber = deleterownumber, identifier = "chooserow"))
+        return render_template("admindisplaytables.html", table = "Row Delete", familydet = db.session.query(FamilyDetails).order_by(FamilyDetails.id.asc()).all())
+    elif session["deletenumber"] == "3":
+        if identifier != "chooserow":
+            data = db.session.query(FamilyNames).filter(FamilyNames.id == identifier).first()
+            db.session.delete(data)
+            db.session.commit()
+            return redirect(url_for("deletetablerow", deleterownumber = deleterownumber, identifier = "chooserow"))
+        return render_template("admindisplaytables.html", table = "Row Delete", familynames = db.session.query(FamilyNames).order_by(FamilyNames.id.asc()).all())
+    else:
+        flash("No such table exists", "danger")
+        return redirect(url_for("admindashboard"))
 
 @app.route("/admin/table/delete/<number>", methods = ["GET", "POST"])
 @is_admin
@@ -310,59 +421,6 @@ def deletetables(number):
     elif number == "3":
         db.session.query(FamilyNames).delete()
         db.session.commit()
-    else:
-        flash("No such table exists", "danger")
-        return redirect(url_for("admindashboard"))
-
-@app.route("/admin/table/row/delete/<number>", methods = ["GET", "POST"])
-@is_admin
-def deletetablerow(number):
-    session["deleterownumber"] = number
-    if number == "All":
-        if request.method == "POST":
-            tableid = request.form["tableid"]
-            tableid = tableid.split(":")
-            num, chumma = tableid[0], tableid[1]
-            if num == "1":
-                data = db.session.query(RegisterDetails).filter(RegisterDetails.id == chumma).first()
-                db.session.delete(data)
-                db.session.commit()
-            elif num == "2":
-                data = db.session.query(FamilyDetails).filter(FamilyDetails.id == chumma).first()
-                db.session.delete(data)
-                db.session.commit()
-            elif num == "3":
-                data = db.session.query(FamilyNames).filter(FamilyNames.id == chumma).first()
-                db.session.delete(data)
-                db.session.commit()
-            else:
-                flash("No such table exists", "danger")
-                return redirect(url_for("admindashboard"))
-        return render_template("admindisplaytables.html", table = "row/delete/" + number, registerdet = db.session.query(RegisterDetails).order_by(RegisterDetails.id.asc()).all(), familydet = db.session.query(FamilyDetails).order_by(FamilyDetails.id.asc()).all(), familynames = db.session.query(FamilyNames).order_by(FamilyNames.id.asc()).all())
-    elif number == "1":
-        if request.method == "POST":
-            tableid = request.form["tableid"].split(":")
-            chumma = tableid[1]
-            data = db.session.query(RegisterDetails).filter(RegisterDetails.id == chumma).first()
-            db.session.delete(data)
-            db.session.commit()
-        return render_template("admindisplaytables.html", table = "row/delete/" + number, registerdet = db.session.query(RegisterDetails).order_by(RegisterDetails.id.asc()).all())
-    elif number == "2":
-        if request.method == "POST":
-            tableid = request.form["tableid"].split(":")
-            chumma = tableid[1]
-            data = db.session.query(FamilyDetails).filter(FamilyDetails.id == chumma).first()
-            db.session.delete(data)
-            db.session.commit()
-        return render_template("admindisplaytables.html", table = "row/delete/" + number, familydet = db.session.query(FamilyDetails).order_by(FamilyDetails.id.asc()).all())
-    elif number == "3":
-        if request.method == "POST":
-            tableid = request.form["tableid"].split(":")
-            chumma = tableid[1]
-            data = db.session.query(FamilyNames).filter(FamilyNames.id == chumma).first()
-            db.session.delete(data)
-            db.session.commit()
-        return render_template("admindisplaytables.html", table = "row/delete/" + number, familynames = db.session.query(FamilyNames).order_by(FamilyNames.id.asc()).all())
     else:
         flash("No such table exists", "danger")
         return redirect(url_for("admindashboard"))

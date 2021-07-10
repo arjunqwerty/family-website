@@ -54,58 +54,68 @@
 	<body>
 		{% include "_navbar.html" %}
 		{% include "_messages.html" %}
-		{% if session.addrownumber == "1and2" %}
-		<form action="/register" method="POST">
+		<form action="/admin/table/row/edit/{{session.editnumber}}/{{session.rowid}}" method="POST">
+			{% if session.editnumber == "1" %}
 			<h1>Register Details</h1>
 			<div class="row">
-				<div class="form-group col-20">
+				<div class="form-group col-15">
 					<h4>User Name</h4>
-					<input type="text" name="name">
+					<input type="text" name="name" value="{{register.name}}">
 				</div>
-				<div class="form-group col-20">
+				<div class="form-group col-15">
 					<h4>Phone Number</h4>
-					<input type="tel" name="phone" pattern="[+]{1}[0-9]/[-]{[1-5} [0-9]{[10-20]}" placeholder="Format: +<Country code> <number>">
+					<input type="tel" name="phone" value="{{register.phone}}" pattern="[+]{1}[0-9]/[-]{[1-5} [0-9]{[10-20]}">
 				</div>
-				<div class="form-group col-20">
+				<div class="form-group col-15">
 					<h4>Password</h4>
-					<input type="password" name="password">
+					<input type="text" name="password" value="{{register.password}}">
+				</div>
+				<div class="form-group col-15">
+					<h4>Approval</h4>
+					<select name="salutation" required>
+						<option value="Waiting">Waiting</option>
+						<option value="Approved">Approved</option>
+					</select>
 				</div>
 			</div>
+			{% endif %}
+
+			{% if session.editnumber == "2" %}
 			<h1>Family Details</h1>
 			<div class="row">
 				<div class="col-xs-5 col-sm-5 col-md-5 col-lg-15 col-xl-15"></div>
 				<div class="col-xs-50 col-sm-50 col-md-50 col-lg-30 col-xl-30">
 					<div class="form-group"><!--name-->
 						<h4>Name :</h4>
-						<select name="salutation" style="width: 20%; margin-right: -4px;" required>
+						<select style="width: 20%; margin-right: -4px;" name="salutation">
 							<option value="Mr. ">Mr.</option>
 							<option value="Mrs. ">Mrs.</option>
 							<option value="Master. ">Master.</option>
 							<option value="Ms. ">Ms.</option>
 							<option value="Dr. ">Dr.</option>
 						</select>
-						<input type="text" class="text" style="width: 80%;" name="name" value="" required>
+						<input type="text" class="text" style="width: 80%;" name="name" value="{{familydet.name}}">
 					</div>
 					<div class="form-group"><!--address-->
 						<h4>Address :</h4>
-						<input type="text" class="text" style="width: 50%; margin-right: -4px;" name="housest" placeholder="House num, Street" value="" required>
-						<input type="text" class="text" style="width: 50%; margin-right: -4px;" name="locality" placeholder="Locality" value="" required>
-						<input type="text" class="text" style="width: 50%; margin-right: -4px;" name="city" placeholder="City" value="" required>
-						<input type="text" class="text" style="width: 50%; margin-right: -4px;" name="state" placeholder="State" value="" required>
-						<input type="text" class="text" style="width: 50%; margin-right: -4px;" name="pincode" placeholder="Pincode" value="" required>
+						<input type="text" class="text" style="width: 50%; margin-right: -4px;" name="housest" value="{{familydet.housestreet}}">
+						<input type="text" class="text" style="width: 50%; margin-right: -4px;" name="locality" value="{{familydet.neighbourhood}}">
+						<input type="text" class="text" style="width: 50%; margin-right: -4px;" name="city" value="{{familydet.city}}">
+						<input type="text" class="text" style="width: 50%; margin-right: -4px;" name="state" value="{{familydet.state}}">
+						<input type="text" class="text" style="width: 50%; margin-right: -4px;" name="pincode" value="{{familydet.pincode}}">
 					</div>
 					<div id="phone" class="form-group"><!--phone-->
 						<h4>Phone Number :</h4>
-						<input type="text" class="text" style="width: 50%;" name="phone" value="" readonly>
+						<input type="text" class="text" style="width: 50%;" name="phone" value="{{familydet.phone}}" readonly>
 						<a href="#addphonenum" class="btn btn-default" data-toggle="tab" onclick="showPhoneInput.call(this, event)">Add Phone Number</a>
 					</div>
 					<div id="datetime" class="form-group">
 						<h4>Date of Birth :</h4>
-						<input type="date" class="text" name="dob" value="" required>
+						<input type="date" class="text" name="dob" value="{{familydet.dateofbirth}}">
 					</div>
 					<div class="form-group"><!--familyname-->
 						<h4>Family Name :</h4>
-						<select name="familyname" onchange="showOtherInput.call(this, event)" required>
+						<select name="familyname" onchange="showOtherInput.call(this, event)">
 							<option value=""></option>
 							{% for familyname in familynames %}
 								<option value="{{familyname.name}}">{{familyname.name}}</option>
@@ -126,7 +136,7 @@
 		</form>
 		{% endif %}
 
-		{% if session.addrownumber == "3" %}
+		{% if session.editnumber == "3" %}
 			<h1>Family Names Details</h1>
 			<table class="table table-striped">
 				<tr>
@@ -136,7 +146,7 @@
 				<tr>
 					<td></td>
 					<td>
-						<input type="text">
+						<input type="text" value="{{familynames.name}}">
 					</td>
 				</tr>
 			</table>
@@ -144,7 +154,7 @@
 
 		<br>
 		<div class="text-center">
-			<a href="/admin/dashboard" class="btn btn-default btnstretch">Back</a>
+			<a href="/admin/table/row/edit/{{session.editnumber}}/chooserow" class="btn btn-default btnstretch">Back</a>
 		</div>
 		<br>
 		<script>

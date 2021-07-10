@@ -16,104 +16,102 @@
 	<body>
 		{% include "_navbar.html" %}
 		{% include "_messages.html" %}
-		<form action="/admin/table/{{table}}" method="POST">
-			<h1 class="text-center">{{table}}</h1>
-			{% if registerdet != asdfljhj %}
-				<h1>Register Details</h1>
-				<table class="table table-striped">
+		<h1 class="text-center">{{table}}</h1>
+		{% if registerdet != asdfljhj %}
+			<h1>Register Details</h1>
+			<table class="table table-striped">
+				<tr>
+					<th>ID</th>
+					<th>Name</th>
+					<th>Phone</th>
+					<th>Password</th>
+					<th>Approval</th>
+					{% if table == "Row Delete" or table == "Row Edit" %}
+						<th></th>
+					{% endif %}
+				</tr>
+				{% for registerdet in registerdet %}
 					<tr>
-						<th>ID</th>
-						<th>Name</th>
-						<th>Phone</th>
-						<th>Password</th>
-						<th>Approval</th>
-						{% if table[:11] == "row/delete/" or table[:9] == "row/edit/" %}
-							<th></th>
+						<td>{{registerdet.id}}</td>
+						<td>{{registerdet.name}}</td>
+						<td>{{registerdet.phone}}</td>
+						<td>Sorry can't show :)</td>
+						<td>{{registerdet.approval}}</td>
+						{% if table == "Row Delete" %}
+							<td><a href="/admin/table/row/delete/1/{{registerdet.id}}" class="btn btn-default btnstretch">{{registerdet.id}}</a></td>
+						{% elif table == "Row Edit" %}
+							<td><a href="/admin/table/row/edit/{{session.editnumber}}/{{registerdet.id}}" class="btn btn-default btnstretch">{{registerdet.id}}</a></td>
 						{% endif %}
 					</tr>
-					{% for registerdet in registerdet %}
-						<tr>
-							<td>{{registerdet.id}}</td>
-							<td>{{registerdet.name}}</td>
-							<td>{{registerdet.phone}}</td>
-							<td>Sorry can't show :)</td>
-							<td>{{registerdet.approval}}</td>
-							{% if table[:11] == "row/delete/" %}
-								<td><input type="submit" class="btn btn-default btnstretch" name="tableid" value="1:{{registerdet.id}}"></td>
-							{% elif table[:9] == "row/edit/" %}
-								<td><input type="submit" class="btn btn-default btnstretch" name="tableid" value="1:{{registerdet.id}}"></td>
-							{% endif %}
-						</tr>
-					{% endfor %}
-				</table>
-			{% endif %}
+				{% endfor %}
+			</table>
+		{% endif %}
 
-			{% if familydet != asdfljhj %}
-				<h1>Family Details</h1>
-				<table class="table table-striped">
+		{% if familydet != asdfljhj %}
+			<h1>Family Details</h1>
+			<table class="table table-striped">
+				<tr>
+					<th>ID</th>
+					<th>Salutation</th>
+					<th>Name</th>
+					<th>Date of Birth</th>
+					<th>House Street</th>
+					<th>Locality</th>
+					<th>City</th>
+					<th>State</th>
+					<th>Pincode</th>
+					<th>Phone Number</th>
+					<th>Family Name</th>
+					{% if table == "Row Delete" or table == "Row Edit" %}
+						<th></th>
+					{% endif %}
+				</tr>
+				{% for familydet in familydet %}
 					<tr>
-						<th>ID</th>
-						<th>Salutation</th>
-						<th>Name</th>
-						<th>Date of Birth</th>
-						<th>House Street</th>
-						<th>Locality</th>
-						<th>City</th>
-						<th>State</th>
-						<th>Pincode</th>
-						<th>Phone Number</th>
-						<th>Family Name</th>
-						{% if table[:11] == "row/delete/" or table[:9] == "row/edit/" %}
-							<th></th>
+						<td>{{familydet.id}}</td>
+						<td>{{familydet.salutation}}</td>
+						<td>{{familydet.name}}</td>
+						<td>{{familydet.dateofbirth}}</td>
+						<td>{{familydet.housestreet}}</td>
+						<td>{{familydet.neighbourhood}}</td>
+						<td>{{familydet.city}}</td>
+						<td>{{familydet.state}}</td>
+						<td>{{familydet.pincode}}</td>
+						<td>{{familydet.phone}}</td>
+						<td>{{familydet.familyname}}</td>
+						{% if table == "Row Delete" %}
+							<td><a href="/admin/table/row/delete/2/{{familydet.id}}" class="btn btn-default btnstretch">{{familydet.id}}</a></td>
+						{% elif table == "Row Edit" %}
+							<td><a href="/admin/table/row/edit/{{session.editnumber}}/{{familydet.id}}" class="btn btn-default btnstretch">{{familydet.id}}</a></td>
 						{% endif %}
 					</tr>
-					{% for familydet in familydet %}
-						<tr>
-							<td>{{familydet.id}}</td>
-							<td>{{familydet.salutation}}</td>
-							<td>{{familydet.name}}</td>
-							<td>{{familydet.dateofbirth}}</td>
-							<td>{{familydet.housestreet}}</td>
-							<td>{{familydet.neighbourhood}}</td>
-							<td>{{familydet.city}}</td>
-							<td>{{familydet.state}}</td>
-							<td>{{familydet.pincode}}</td>
-							<td>{{familydet.phone}}</td>
-							<td>{{familydet.familyname}}</td>
-							{% if table[:11] == "row/delete/" %}
-								<td><input type="submit" class="btn btn-default btnstretch" name="tableid" value="2:{{familydet.id}}"></td>
-							{% elif table[:9] == "row/edit/" %}
-								<td><input type="submit" class="btn btn-default btnstretch" name="tableid" value="2:{{familydet.id}}"></td>
-							{% endif %}
-						</tr>
-					{% endfor %}
-				</table>
-			{% endif %}
+				{% endfor %}
+			</table>
+		{% endif %}
 
-			{% if familynames != asdfljhj %}
-				<h1>Family Names Details</h1>
-				<table class="table table-striped">
+		{% if familynames != asdfljhj %}
+			<h1>Family Names Details</h1>
+			<table class="table table-striped">
+				<tr>
+					<th>ID</th>
+					<th>Name</th>
+					{% if table == "Row Delete" or table == "Row Edit" %}
+						<th></th>
+					{% endif %}
+				</tr>
+				{% for familynames in familynames %}
 					<tr>
-						<th>ID</th>
-						<th>Name</th>
-						{% if table[:11] == "row/delete/" or table[:9] == "row/edit/" %}
-							<th></th>
+						<td>{{familynames.id}}</td>
+						<td>{{familynames.name}}</td>
+						{% if table == "Row Delete" %}
+							<td><a href="/admin/table/row/delete/3/{{familynames.id}}" class="btn btn-default btnstretch">{{familynames.id}}</a></td>
+						{% elif table == "Row Edit" %}
+							<td><a href="/admin/table/row/edit/{{session.editnumber}}/{{familynames.id}}" class="btn btn-default btnstretch">{{familynames.id}}</a></td>
 						{% endif %}
 					</tr>
-					{% for familynames in familynames %}
-						<tr>
-							<td>{{familynames.id}}</td>
-							<td>{{familynames.name}}</td>
-							{% if table[:11] == "row/delete/" %}
-								<td><input type="submit" class="btn btn-default btnstretch" name="tableid" value="3:{{familynames.id}}"></td>
-							{% elif table[:9] == "row/edit/" %}
-								<td><input type="submit" class="btn btn-default btnstretch" name="tableid" value="3:{{familynames.id}}"></td>
-							{% endif %}
-						</tr>
-					{% endfor %}
-				</table>
-			{% endif %}
-		</form>
+				{% endfor %}
+			</table>
+		{% endif %}
 
 		<br>
 		<div class="text-center">
