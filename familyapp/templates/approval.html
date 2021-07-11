@@ -4,7 +4,7 @@
         <meta charset="UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Document</title>
+        <title>TKR Relatives</title>
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
 		<style>
 			.btnstretch {
@@ -30,7 +30,6 @@
 				<th>S No</th>
 				<th>Name</th>
 				<th>Phone</th>
-				<th>Identifier</th>
 				<!--<th><a href="/details/add" class="btn btn-info btnstretch">Add</a></th>-->
 				<th></th>
 				<th></th>
@@ -41,9 +40,8 @@
 					<td>{{person.id}}</td>
 					<td>{{person.name}}</td>
 					<td>{{person.phone}}</td>
-					<td>{{person.identifier}}</td>
-                    <td class="text-center"><a href="/admin/approval/approved/{{person.id}}" class="btn btn-success">Approve</a></td>
-                    <td class="text-center"><a href="/admin/approval/delete/{{person.id}}" class="btn btn-danger">Delete</a></td>
+                    <td class="text-center"><a href="/admin/approval/approved/{{person.id}}" class="btn btn-success btnstretch">Approve</a></td>
+                    <td class="text-center"><a href="/admin/approval/delete/{{person.id}}" class="btn btn-danger btnstretch">Delete</a></td>
 				</tr>
 			{% endfor %}
 		</table>

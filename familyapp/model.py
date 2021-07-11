@@ -20,12 +20,12 @@ class FamilyDetails(db.Model):
     salutation = db.Column(db.String(10))
     name = db.Column(db.String(200))
     dateofbirth = db.Column(db.Date())
-    housestreet = db.Column(db.String(50))
-    neighbourhood = db.Column(db.String(50))
+    housestreet = db.Column(db.String(100))
+    neighbourhood = db.Column(db.String(100))
     city = db.Column(db.String(50))
     state = db.Column(db.String(50))
     pincode = db.Column(db.String(10))
-    phone = db.Column(db.String(50))
+    phone = db.Column(db.String(100))
     familyname = db.Column(db.String(200))
 
     def __init__(self, salutation, name, dateofbirth, housestreet, neighbourhood, city, state, pincode, phone, familyname):

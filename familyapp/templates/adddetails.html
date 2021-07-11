@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-		<title>ZORG</title>
+		<title>TKR Relatives</title>
 		<link rel="icon" type="image/png" href="/static/Favicon.png">
 		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity = "sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin = "anonymous">
         <link rel="stylesheet" href="/static/sixtyfoldcoloum.css">
@@ -32,7 +32,7 @@
 			select {
 				height: 35px;
 				width: 100%;
-				padding: 5px;
+				padding-left: 5px;
 				vertical-align: middle;
 			}
 			input {
@@ -64,28 +64,36 @@
 							<option value="Ms. ">Ms.</option>
 							<option value="Dr. ">Dr.</option>
 						</select>
-						<input class="text" type="text" style="width: 80%;" name="name" value="{{data.name}}" required>
+						<input class="text" type="text" style="width: 80%;" name="name" value="" required>
 					</div>
 					<div class="form-group"><!--address-->
 						<h4>Address :</h4>
-						<input type="text" class="text" style="width: 50%; margin-right: -4px;" name="housest" placeholder="House num, Street" value="{{data.housestreet}}" required>
-						<input type="text" class="text" style="width: 50%; margin-right: -4px;" name="locality" placeholder="Locality" value="{{data.neighbourhood}}" required>
-						<input type="text" class="text" style="width: 50%; margin-right: -4px;" name="city" placeholder="City" value="{{data.city}}" required>
-						<input type="text" class="text" style="width: 50%; margin-right: -4px;" name="state" placeholder="State" value="{{data.state}}" required>
-						<input type="text" class="text" style="width: 50%; margin-right: -4px;" name="pincode" placeholder="Pincode" value="{{data.pincode}}" required>
+						<input type="text" class="text" style="width: 50%; margin-right: -4px;" name="housest" placeholder="House num, Street" value="" required>
+						<input type="text" class="text" style="width: 50%; margin-right: -4px;" name="locality" placeholder="Locality" value="" required>
+						<select id="selectcity" name="city" onchange="showCityOtherInput.call(this, event)" style="width: 50%; margin-right: -4px;" required>
+							<option value="Chennai">Chennai</option>
+							<option value="other">Other</option>
+						</select>
+						<select id="selectstate" name="state" onchange="showStateOtherInput.call(this, event)" style="width: 50%; margin-right: -4px;" required>
+							<option value="Tamil Nadu">Tamil Nadu</option>
+							<option value="other">Other</option>
+						</select>
+						<input type="text" class="text" style="width: 50%; margin-right: -4px;display: none;" id="cityotherinput" name="othercity" placeholder="City" value="">
+						<input type="text" class="text" style="width: 50%; margin-right: -4px;display: none;" id="stateotherinput" name="otherstate" placeholder="State" value="">
+						<input type="text" class="text" style="width: 50%; margin-right: -4px;" name="pincode" placeholder="Pincode" value="" required>
 					</div>
 					<div id="phone" class="form-group"><!--phone-->
 						<h4>Phone Number :</h4>
-						<input type="text" class="text" style="width: 50%;" name="phone" value="{{data.phone}}" required readonly>
-						<a href="#addphonenum" class="btn btn-default" data-toggle="tab" onclick="showPhoneInput.call(this, event)">Add Phone Number</a>
+						<input type="text" class="text" style="width: 50%;" name="phone" value="{{phonenum}}" required readonly>
+						<a href="#addphonenum" class="btn btn-default" style="width: 50%; margin-right: -4px;" data-toggle="tab" onclick="showPhoneInput.call(this, event)">Add Phone Number</a>
 					</div>
 					<div id="datetime" class="form-group">
 						<h4>Date of Birth :</h4>
-						<input type="date" class="text" name="dob" value="{{data.dateofbirth}}" required>
+						<input type="date" class="text" name="dob" value="" required>
 					</div>
 					<div class="form-group"><!--familyname-->
 						<h4>Family Name :</h4>
-						<select name="familyname" onchange="showOtherInput.call(this, event)" required>
+						<select name="familyname" onchange="showFamilyOtherInput.call(this, event)" required>
 							<option value=""></option>
 							{% for familyname in familynames %}
 								<option value="{{familyname.name}}">{{familyname.name}}</option>
@@ -93,7 +101,7 @@
 							<option value="other">Other</option>
 						</select>
 					</div>
-					<div id="otherinput" class="form-group" style="display: none;">
+					<div id="familyotherinput" class="form-group" style="display: none;">
 						<h6>Enter Family Name</h6>
 						<input class="text" type="text" name="otherfamilyname" value="">
 					</div>
@@ -107,15 +115,29 @@
 		<script>
 			var array = document.getElementsByName("familyname").item(0).children;
 			for (let index = 0; index < array.length; index++) {
-				if (array.item(index).value == "{{data.familyname}}") {
+				if (array.item(index).value == "") {
 					document.getElementsByName("familyname").item(0).children.item(index).selected = true;
 				}
 			}
-			function showOtherInput(event) {
+			function showFamilyOtherInput(event) {
 				if (this.options[this.selectedIndex].text == "Other") {
-					document.getElementById("otherinput").style.display = "block";
+					document.getElementById("familyotherinput").style.display = "block";
 				} else {
-					document.getElementById("otherinput").style.display = "none";
+					document.getElementById("familyotherinput").style.display = "none";
+				}
+			}
+			function showCityOtherInput(event) {
+				if (this.options[this.selectedIndex].text == "Other") {
+					document.getElementById("cityotherinput").style.display = "initial";
+				} else {
+					document.getElementById("cityotherinput").style.display = "none";
+				}
+			}
+			function showStateOtherInput(event) {
+				if (this.options[this.selectedIndex].text == "Other") {
+					document.getElementById("stateotherinput").style.display = "initial";
+				} else {
+					document.getElementById("stateotherinput").style.display = "none";
 				}
 			}
 			function showPhoneInput(event) {

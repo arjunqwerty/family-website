@@ -160,8 +160,16 @@ def adddetails():
         name = request.form["name"]
         housest = request.form["housest"]
         locality = request.form["locality"]
-        city = request.form["city"]
-        state = request.form["state"]
+        othercity = request.form["city"]
+        otherstate = request.form["state"]
+        if othercity == "other":
+            city = request.form["othercity"]
+        else:
+            city = othercity
+        if otherstate == "other":
+            state = request.form["otherstate"]
+        else:
+            state = otherstate
         pincode = request.form["pincode"]
         dob = request.form["dob"]
         phone = request.form["phone"]
@@ -426,6 +434,11 @@ def deletetables(number):
     else:
         flash("No such table exists", "danger")
         return redirect(url_for("admindashboard"))
+    return redirect(url_for("admindashboard"))
+
+@app.route("/admin/droptables", methods = ["GET", "POST"])
+def droptables():
+    db.drop(RegisterDetails)
     return redirect(url_for("admindashboard"))
 
 @app.route("/admin/logout")

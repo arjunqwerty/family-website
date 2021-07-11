@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-		<title>ZORG</title>
+		<title>TKR Relatives</title>
 		<link rel="icon" type="image/png" href="/static/Favicon.png">
 		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity = "sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin = "anonymous">
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
@@ -54,68 +54,58 @@
 	<body>
 		{% include "_navbar.html" %}
 		{% include "_messages.html" %}
-		<form action="/admin/table/row/edit/{{session.editnumber}}/{{session.rowid}}" method="POST">
-			{% if session.editnumber == "1" %}
+		{% if session.addrownumber == "1and2" %}
+		<form action="/register" method="POST">
 			<h1>Register Details</h1>
 			<div class="row">
-				<div class="form-group col-15">
+				<div class="form-group col-20">
 					<h4>User Name</h4>
-					<input type="text" name="name" value="{{register.name}}">
+					<input type="text" name="name">
 				</div>
-				<div class="form-group col-15">
+				<div class="form-group col-20">
 					<h4>Phone Number</h4>
-					<input type="tel" name="phone" value="{{register.phone}}" pattern="[+]{1}[0-9]/[-]{[1-5} [0-9]{[10-20]}">
+					<input type="tel" name="phone">
 				</div>
-				<div class="form-group col-15">
+				<div class="form-group col-20">
 					<h4>Password</h4>
-					<input type="text" name="password" value="{{register.password}}">
-				</div>
-				<div class="form-group col-15">
-					<h4>Approval</h4>
-					<select name="salutation" required>
-						<option value="Waiting">Waiting</option>
-						<option value="Approved">Approved</option>
-					</select>
+					<input type="password" name="password">
 				</div>
 			</div>
-			{% endif %}
-
-			{% if session.editnumber == "2" %}
 			<h1>Family Details</h1>
 			<div class="row">
 				<div class="col-xs-5 col-sm-5 col-md-5 col-lg-15 col-xl-15"></div>
 				<div class="col-xs-50 col-sm-50 col-md-50 col-lg-30 col-xl-30">
 					<div class="form-group"><!--name-->
 						<h4>Name :</h4>
-						<select style="width: 20%; margin-right: -4px;" name="salutation">
+						<select name="salutation" style="width: 20%; margin-right: -4px;" required>
 							<option value="Mr. ">Mr.</option>
 							<option value="Mrs. ">Mrs.</option>
 							<option value="Master. ">Master.</option>
 							<option value="Ms. ">Ms.</option>
 							<option value="Dr. ">Dr.</option>
 						</select>
-						<input type="text" class="text" style="width: 80%;" name="name" value="{{familydet.name}}">
+						<input type="text" class="text" style="width: 80%;" name="name" value="" required>
 					</div>
 					<div class="form-group"><!--address-->
 						<h4>Address :</h4>
-						<input type="text" class="text" style="width: 50%; margin-right: -4px;" name="housest" value="{{familydet.housestreet}}">
-						<input type="text" class="text" style="width: 50%; margin-right: -4px;" name="locality" value="{{familydet.neighbourhood}}">
-						<input type="text" class="text" style="width: 50%; margin-right: -4px;" name="city" value="{{familydet.city}}">
-						<input type="text" class="text" style="width: 50%; margin-right: -4px;" name="state" value="{{familydet.state}}">
-						<input type="text" class="text" style="width: 50%; margin-right: -4px;" name="pincode" value="{{familydet.pincode}}">
+						<input type="text" class="text" style="width: 50%; margin-right: -4px;" name="housest" placeholder="House num, Street" value="" required>
+						<input type="text" class="text" style="width: 50%; margin-right: -4px;" name="locality" placeholder="Locality" value="" required>
+						<input type="text" class="text" style="width: 50%; margin-right: -4px;" name="city" placeholder="City" value="" required>
+						<input type="text" class="text" style="width: 50%; margin-right: -4px;" name="state" placeholder="State" value="" required>
+						<input type="text" class="text" style="width: 50%; margin-right: -4px;" name="pincode" placeholder="Pincode" value="" required>
 					</div>
 					<div id="phone" class="form-group"><!--phone-->
 						<h4>Phone Number :</h4>
-						<input type="text" class="text" style="width: 50%;" name="phone" value="{{familydet.phone}}" readonly>
+						<input type="text" class="text" style="width: 50%;" name="phone" value="" readonly>
 						<a href="#addphonenum" class="btn btn-default" data-toggle="tab" onclick="showPhoneInput.call(this, event)">Add Phone Number</a>
 					</div>
 					<div id="datetime" class="form-group">
 						<h4>Date of Birth :</h4>
-						<input type="date" class="text" name="dob" value="{{familydet.dateofbirth}}">
+						<input type="date" class="text" name="dob" value="" required>
 					</div>
 					<div class="form-group"><!--familyname-->
 						<h4>Family Name :</h4>
-						<select name="familyname" onchange="showOtherInput.call(this, event)">
+						<select name="familyname" onchange="showOtherInput.call(this, event)" required>
 							<option value=""></option>
 							{% for familyname in familynames %}
 								<option value="{{familyname.name}}">{{familyname.name}}</option>
@@ -136,7 +126,7 @@
 		</form>
 		{% endif %}
 
-		{% if session.editnumber == "3" %}
+		{% if session.addrownumber == "3" %}
 			<h1>Family Names Details</h1>
 			<table class="table table-striped">
 				<tr>
@@ -146,7 +136,7 @@
 				<tr>
 					<td></td>
 					<td>
-						<input type="text" value="{{familynames.name}}">
+						<input type="text">
 					</td>
 				</tr>
 			</table>
@@ -154,7 +144,7 @@
 
 		<br>
 		<div class="text-center">
-			<a href="/admin/table/row/edit/{{session.editnumber}}/chooserow" class="btn btn-default btnstretch">Back</a>
+			<a href="/admin/dashboard" class="btn btn-default btnstretch">Back</a>
 		</div>
 		<br>
 		<script>
