@@ -160,7 +160,7 @@
 								document.getElementById("date{{person.id}}").innerHTML = date[2] + "-" + date[1] + "-" + date[0];
 							</script>
 							<p class="col-9">{{person.familyname}}</p>
-							{% if (person.salutation + person.name) == session.name and session.filter %}
+							{% if session.admin or (person.salutation + person.name) == session.name and session.filter %}
 								<p class="col-5"><a class="btn btn-default" href="/details/edit">Edit</a></p>
 							{% else %}
 								<p class="col-5"></p>

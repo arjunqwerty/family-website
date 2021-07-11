@@ -3,7 +3,6 @@ from functools import wraps
 from passlib.hash import sha256_crypt as sa
 import random as rd
 from sqlalchemy import asc, desc
-from sqlalchemy.sql.expression import table
 
 from familyapp import app, db
 from familyapp.model import RegisterDetails, FamilyDetails, FamilyNames
@@ -52,6 +51,10 @@ def home():
         if peoplename == "Admin":
             if password == "Admin":
                 session["admin"] = True
+                session["logged_in"] = True
+                session["userid"] = "1"
+                session["sortid"] = ""
+                session["sortby"] = "asc"
                 return redirect(url_for("admindashboard"))
             else:
                 flash("Don't try to get into Administration", "danger")
@@ -249,13 +252,13 @@ def adminapproval(stat,idapprove):
 def displaytables(number):
     session["displaynumber"] = number
     if number == "All":
-        return render_template("admindisplaytables.html", table="display/" + number, registerdet = db.session.query(RegisterDetails).order_by(RegisterDetails.id.asc()).all(), familydet = db.session.query(FamilyDetails).order_by(FamilyDetails.id.asc()).all(), familynames = db.session.query(FamilyNames).order_by(FamilyNames.id.asc()).all())
+        return render_template("admindisplaytables.html", table = "Display " + number, registerdet = db.session.query(RegisterDetails).order_by(RegisterDetails.id.asc()).all(), familydet = db.session.query(FamilyDetails).order_by(FamilyDetails.id.asc()).all(), familynames = db.session.query(FamilyNames).order_by(FamilyNames.id.asc()).all())
     elif number == "1":
-        return render_template("admindisplaytables.html", table="display/" + number, registerdet = db.session.query(RegisterDetails).order_by(RegisterDetails.id.asc()).all())
+        return render_template("admindisplaytables.html", table = "Display " + number, registerdet = db.session.query(RegisterDetails).order_by(RegisterDetails.id.asc()).all())
     elif number == "2":
-        return render_template("admindisplaytables.html", table="display/" + number, familydet = db.session.query(FamilyDetails).order_by(FamilyDetails.id.asc()).all())
+        return render_template("admindisplaytables.html", table = "Display " + number, familydet = db.session.query(FamilyDetails).order_by(FamilyDetails.id.asc()).all())
     elif number == "3":
-        return render_template("admindisplaytables.html", table="display/" + number, familynames = db.session.query(FamilyNames).order_by(FamilyNames.id.asc()).all())
+        return render_template("admindisplaytables.html", table = "Display " + number, familynames = db.session.query(FamilyNames).order_by(FamilyNames.id.asc()).all())
     else:
         flash("No such table exists", "danger")
         return redirect(url_for("admindashboard"))
@@ -313,8 +316,8 @@ def edittableshow(edittablenumber, identifier):
                 data.password = password
                 data.approval = approval
                 db.session.commit()
-            return render_template("adminedittable.html", table = "Row Edit", register = db.session.query(RegisterDetails).filter(RegisterDetails.id == identifier).first())
-        return render_template("admindisplaytables.html", table = "Row Edit", registerdet = db.session.query(RegisterDetails).order_by(RegisterDetails.id.asc()).all())
+            return render_template("adminedittable.html", table = "Row Edit " + edittablenumber, register = db.session.query(RegisterDetails).filter(RegisterDetails.id == identifier).first())
+        return render_template("admindisplaytables.html", table = "Row Edit " + edittablenumber, registerdet = db.session.query(RegisterDetails).order_by(RegisterDetails.id.asc()).all())
     elif edittablenumber == "2":
         if identifier != "chooserow":
             if request.method == "POST":
@@ -340,8 +343,8 @@ def edittableshow(edittablenumber, identifier):
                 data.phone = phone
                 data.familyname = familyname
                 db.session.commit()
-            return render_template("adminedittable.html", table = "Row Edit", familydet = db.session.query(FamilyDetails).filter(FamilyDetails.id == identifier).first())
-        return render_template("admindisplaytables.html", table = "Row Edit", familydet = db.session.query(FamilyDetails).order_by(FamilyDetails.id.asc()).all())
+            return render_template("adminedittable.html", table = "Row Edit " + edittablenumber, familydet = db.session.query(FamilyDetails).filter(FamilyDetails.id == identifier).first())
+        return render_template("admindisplaytables.html", table = "Row Edit " + edittablenumber, familydet = db.session.query(FamilyDetails).order_by(FamilyDetails.id.asc()).all())
     elif edittablenumber == "3":
         if identifier != "chooserow":
             if request.method == "POST":
@@ -349,8 +352,8 @@ def edittableshow(edittablenumber, identifier):
                 data = db.session.query(FamilyNames).filter(FamilyDetails.id == identifier).first()
                 data.name = familyname
                 db.session.commit()
-            return render_template("adminedittable.html", table = "Row Edit", familynames = db.session.query(FamilyNames).filter(FamilyNames.id == identifier).first())
-        return render_template("admindisplaytables.html", table = "Row Edit", familynames = db.session.query(FamilyNames).order_by(FamilyNames.id.asc()).all())
+            return render_template("adminedittable.html", table = "Row Edit " + edittablenumber, familynames = db.session.query(FamilyNames).filter(FamilyNames.id == identifier).first())
+        return render_template("admindisplaytables.html", table = "Row Edit " + edittablenumber, familynames = db.session.query(FamilyNames).order_by(FamilyNames.id.asc()).all())
     else:
         flash("No such table exists", "danger")
         return redirect(url_for("admindashboard"))
@@ -378,28 +381,28 @@ def deletetablerow(deleterownumber, identifier):
                 flash("No such table exists", "danger")
                 return redirect(url_for("admindashboard"))
             return redirect(url_for("deletetablerow", deleterownumber = session["deletenumber"], identifier = "chooserow"))
-        return render_template("admindisplaytables.html", table = "Row Delete", registerdet = db.session.query(RegisterDetails).order_by(RegisterDetails.id.asc()).all(), familydet = db.session.query(FamilyDetails).order_by(FamilyDetails.id.asc()).all(), familynames = db.session.query(FamilyNames).order_by(FamilyNames.id.asc()).all())
+        return render_template("admindisplaytables.html", table = "Row Delete " + session["deletenumber"], registerdet = db.session.query(RegisterDetails).order_by(RegisterDetails.id.asc()).all(), familydet = db.session.query(FamilyDetails).order_by(FamilyDetails.id.asc()).all(), familynames = db.session.query(FamilyNames).order_by(FamilyNames.id.asc()).all())
     if session["deletenumber"] == "1":
         if identifier != "chooserow":
             data = db.session.query(RegisterDetails).filter(RegisterDetails.id == identifier).first()
             db.session.delete(data)
             db.session.commit()
             return redirect(url_for("deletetablerow", deleterownumber = deleterownumber, identifier = "chooserow"))
-        return render_template("admindisplaytables.html", table = "Row Delete", registerdet = db.session.query(RegisterDetails).order_by(RegisterDetails.id.asc()).all())
+        return render_template("admindisplaytables.html", table = "Row Delete " + deleterownumber, registerdet = db.session.query(RegisterDetails).order_by(RegisterDetails.id.asc()).all())
     elif session["deletenumber"] == "2":
         if identifier != "chooserow":
             data = db.session.query(FamilyDetails).filter(FamilyDetails.id == identifier).first()
             db.session.delete(data)
             db.session.commit()
             return redirect(url_for("deletetablerow", deleterownumber = deleterownumber, identifier = "chooserow"))
-        return render_template("admindisplaytables.html", table = "Row Delete", familydet = db.session.query(FamilyDetails).order_by(FamilyDetails.id.asc()).all())
+        return render_template("admindisplaytables.html", table = "Row Delete " + deleterownumber, familydet = db.session.query(FamilyDetails).order_by(FamilyDetails.id.asc()).all())
     elif session["deletenumber"] == "3":
         if identifier != "chooserow":
             data = db.session.query(FamilyNames).filter(FamilyNames.id == identifier).first()
             db.session.delete(data)
             db.session.commit()
             return redirect(url_for("deletetablerow", deleterownumber = deleterownumber, identifier = "chooserow"))
-        return render_template("admindisplaytables.html", table = "Row Delete", familynames = db.session.query(FamilyNames).order_by(FamilyNames.id.asc()).all())
+        return render_template("admindisplaytables.html", table = "Row Delete " + deleterownumber, familynames = db.session.query(FamilyNames).order_by(FamilyNames.id.asc()).all())
     else:
         flash("No such table exists", "danger")
         return redirect(url_for("admindashboard"))
@@ -424,6 +427,7 @@ def deletetables(number):
     else:
         flash("No such table exists", "danger")
         return redirect(url_for("admindashboard"))
+    return redirect(url_for("admindashboard"))
 
 @app.route("/admin/logout")
 @is_admin
