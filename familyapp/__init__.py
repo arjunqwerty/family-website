@@ -4,7 +4,7 @@ import os
 
 app = Flask(__name__)
 
-env = "dev"
+env = "prod"
 if env == "dev":
     app.debug = True
     app.config["SECRET_KEY"] = "familywebsiteissimple"
