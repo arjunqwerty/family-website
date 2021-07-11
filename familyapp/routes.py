@@ -1,6 +1,5 @@
 from flask import render_template, flash, redirect, url_for, session, request
 from functools import wraps
-from passlib.hash import sha256_crypt as sa
 import random as rd
 from sqlalchemy import asc, desc
 
