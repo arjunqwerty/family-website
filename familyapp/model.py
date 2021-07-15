@@ -47,3 +47,13 @@ class FamilyNames(db.Model):
 
     def __init__(self, name):
         self.name = name
+
+class CityState(db.Model):
+    __tablename__ = "citesstates"
+    id = db.Column(db.Integer, primary_key = True)
+    city = db.Column(db.String(100))
+    state = db.Column(db.String(100))
+
+    def __init__(self, city, state):
+        self.city = city
+        self.state = state

@@ -112,6 +112,32 @@
 				{% endfor %}
 			</table>
 		{% endif %}
+		
+		{% if citystate != asdfljhj %}
+			<h1>City State Details</h1>
+			<table class="table table-striped">
+				<tr>
+					<th>ID</th>
+					<th>City</th>
+					<th>State</th>
+					{% if table == "Row Delete" or table == "Row Edit" %}
+						<th></th>
+					{% endif %}
+				</tr>
+				{% for citystate in citystate %}
+					<tr>
+						<td>{{citystate.id}}</td>
+						<td>{{citystate.city}}</td>
+						<td>{{citystate.state}}</td>
+						{% if table == "Row Delete" %}
+							<td><a href="/admin/table/row/delete/3/{{citystate.id}}" class="btn btn-default btnstretch">{{citystate.id}}</a></td>
+						{% elif table == "Row Edit" %}
+							<td><a href="/admin/table/row/edit/{{session.editnumber}}/{{citystate.id}}" class="btn btn-default btnstretch">{{citystate.id}}</a></td>
+						{% endif %}
+					</tr>
+				{% endfor %}
+			</table>
+		{% endif %}
 
 		<br>
 		<div class="text-center">

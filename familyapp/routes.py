@@ -4,7 +4,7 @@ import random as rd
 from sqlalchemy import asc, desc
 
 from familyapp import app, db
-from familyapp.model import RegisterDetails, FamilyDetails, FamilyNames
+from familyapp.model import RegisterDetails, FamilyDetails, FamilyNames, CityState
 
 def is_logged_in(f):
     @wraps(f)
@@ -170,6 +170,10 @@ def adddetails():
             state = request.form["otherstate"]
         else:
             state = otherstate
+        if othercity == "other":
+            data = CityState(city, state)
+            db.session.add(data)
+            db.session.commit()
         pincode = request.form["pincode"]
         dob = request.form["dob"]
         phone = request.form["phone"]
@@ -194,7 +198,7 @@ def adddetails():
         db.session.commit()
         flash("Details added", "success")
         return redirect(url_for("index"))
-    return render_template("adddetails.html", data = update, familynames = db.session.query(FamilyNames).all(), phonenum = db.session.query(FamilyDetails).filter(FamilyDetails.id == usercode).first().phone)
+    return render_template("adddetails.html", data = update, familynames = db.session.query(FamilyNames).all(), phonenum = db.session.query(FamilyDetails).filter(FamilyDetails.id == usercode).first().phone, cities = db.session.query(CityState).distinct(CityState.city).all(), states = db.session.query(CityState).distinct(CityState.state).all())
 
 @app.route("/details/edit", methods = ["GET", "POST"])
 def editdetails():
@@ -259,13 +263,15 @@ def adminapproval(stat,idapprove):
 def displaytables(number):
     session["displaynumber"] = number
     if number == "All":
-        return render_template("admindisplaytables.html", table = "Display " + number, registerdet = db.session.query(RegisterDetails).order_by(RegisterDetails.id.asc()).all(), familydet = db.session.query(FamilyDetails).order_by(FamilyDetails.id.asc()).all(), familynames = db.session.query(FamilyNames).order_by(FamilyNames.id.asc()).all())
+        return render_template("admindisplaytables.html", table = "Display " + number, registerdet = db.session.query(RegisterDetails).order_by(RegisterDetails.id.asc()).all(), familydet = db.session.query(FamilyDetails).order_by(FamilyDetails.id.asc()).all(), familynames = db.session.query(FamilyNames).order_by(FamilyNames.id.asc()).all(), citystate = db.session.query(CityState).order_by(CityState.id.asc()).all())
     elif number == "1":
         return render_template("admindisplaytables.html", table = "Display " + number, registerdet = db.session.query(RegisterDetails).order_by(RegisterDetails.id.asc()).all())
     elif number == "2":
         return render_template("admindisplaytables.html", table = "Display " + number, familydet = db.session.query(FamilyDetails).order_by(FamilyDetails.id.asc()).all())
     elif number == "3":
         return render_template("admindisplaytables.html", table = "Display " + number, familynames = db.session.query(FamilyNames).order_by(FamilyNames.id.asc()).all())
+    elif number == "4":
+        return render_template("admindisplaytables.html", table = "Display " + number, citystate = db.session.query(CityState).order_by(CityState.id.asc()).all())
     else:
         flash("No such table exists", "danger")
         return redirect(url_for("admindashboard"))
@@ -303,7 +309,14 @@ def addtablerow(addrownumber):
             db.session.add(data)
             db.session.commit()
             return redirect(url_for("admindashboard"))
-    return render_template("adminaddtable.html")
+        elif addrownumber == "4":
+            city = request.form["city"]
+            state = request.form["state"]
+            data = CityState(city, state)
+            db.session.add(data)
+            db.session.commit()
+            return redirect(url_for("admindashboard"))
+    return render_template("adminaddtable.html", familynames = db.session.query(FamilyNames).all())
 
 @app.route("/admin/table/row/edit/<edittablenumber>/<identifier>", methods = ["GET", "POST"])
 @is_admin
@@ -361,6 +374,17 @@ def edittableshow(edittablenumber, identifier):
                 db.session.commit()
             return render_template("adminedittable.html", table = "Row Edit " + edittablenumber, familynames = db.session.query(FamilyNames).filter(FamilyNames.id == identifier).first())
         return render_template("admindisplaytables.html", table = "Row Edit " + edittablenumber, familynames = db.session.query(FamilyNames).order_by(FamilyNames.id.asc()).all())
+    elif edittablenumber == "4":
+        if identifier != "chooserow":
+            if request.method == "POST":
+                city = request.form["city"]
+                state = request.form["state"]
+                data = db.session.query(CityState).filter(CityState.id == identifier).first()
+                data.city = city
+                data.state = state
+                db.session.commit()
+            return render_template("adminedittable.html", table = "Row Edit " + edittablenumber, citystate = db.session.query(CityState).filter(CityState.id == identifier).first())
+        return render_template("admindisplaytables.html", table = "Row Edit " + edittablenumber, citystate = db.session.query(CityState).order_by(CityState.id.asc()).all())
     else:
         flash("No such table exists", "danger")
         return redirect(url_for("admindashboard"))
@@ -384,11 +408,15 @@ def deletetablerow(deleterownumber, identifier):
                 data = db.session.query(FamilyNames).filter(FamilyNames.id == identifier).first()
                 db.session.delete(data)
                 db.session.commit()
+            elif deleterownumber == "4":
+                data = db.session.query(CityState).filter(CityState.id == identifier).first()
+                db.session.delete(data)
+                db.session.commit()
             else:
                 flash("No such table exists", "danger")
                 return redirect(url_for("admindashboard"))
             return redirect(url_for("deletetablerow", deleterownumber = session["deletenumber"], identifier = "chooserow"))
-        return render_template("admindisplaytables.html", table = "Row Delete " + session["deletenumber"], registerdet = db.session.query(RegisterDetails).order_by(RegisterDetails.id.asc()).all(), familydet = db.session.query(FamilyDetails).order_by(FamilyDetails.id.asc()).all(), familynames = db.session.query(FamilyNames).order_by(FamilyNames.id.asc()).all())
+        return render_template("admindisplaytables.html", table = "Row Delete " + session["deletenumber"], registerdet = db.session.query(RegisterDetails).order_by(RegisterDetails.id.asc()).all(), familydet = db.session.query(FamilyDetails).order_by(FamilyDetails.id.asc()).all(), familynames = db.session.query(FamilyNames).order_by(FamilyNames.id.asc()).all(), citystate = db.session.query(CityState).order_by(CityState.id.asc()).all())
     if session["deletenumber"] == "1":
         if identifier != "chooserow":
             data = db.session.query(RegisterDetails).filter(RegisterDetails.id == identifier).first()
@@ -410,6 +438,13 @@ def deletetablerow(deleterownumber, identifier):
             db.session.commit()
             return redirect(url_for("deletetablerow", deleterownumber = deleterownumber, identifier = "chooserow"))
         return render_template("admindisplaytables.html", table = "Row Delete " + deleterownumber, familynames = db.session.query(FamilyNames).order_by(FamilyNames.id.asc()).all())
+    elif session["deletenumber"] == "4":
+        if identifier != "chooserow":
+            data = db.session.query(CityState).filter(CityState.id == identifier).first()
+            db.session.delete(data)
+            db.session.commit()
+            return redirect(url_for("deletetablerow", deleterownumber = deleterownumber, identifier = "chooserow"))
+        return render_template("admindisplaytables.html", table = "Row Delete " + deleterownumber, citystate = db.session.query(CityState).order_by(CityState.id.asc()).all())
     else:
         flash("No such table exists", "danger")
         return redirect(url_for("admindashboard"))
@@ -431,15 +466,23 @@ def deletetables(number):
     elif number == "3":
         db.session.query(FamilyNames).delete()
         db.session.commit()
+    elif number == "4":
+        db.session.query(CityState).delete()
+        db.session.commit()
     else:
         flash("No such table exists", "danger")
         return redirect(url_for("admindashboard"))
     return redirect(url_for("admindashboard"))
 
-@app.route("/admin/droptables", methods = ["GET", "POST"])
-def droptables():
-    db.drop(RegisterDetails)
-    return redirect(url_for("admindashboard"))
+@app.route("/admin/defaultcitystate")
+@is_admin
+def citystate():
+    lst = [["Chennai", "Tamil Nadu"], ["Madurai", "Tamil Nadu"], ["Trichi", "Tamil Nadu"], ["Salem", "Tamil Nadu"], ["Thooththukkudi", "Tamil Nadu"]]
+    for one in lst:
+        data = CityState(one[0], one[1])
+        db.session.add(data)
+        db.session.commit()
+    return redirect(url_for("home"))
 
 @app.route("/admin/logout")
 @is_admin

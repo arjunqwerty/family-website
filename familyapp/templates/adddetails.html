@@ -64,23 +64,29 @@
 							<option value="Ms. ">Ms.</option>
 							<option value="Dr. ">Dr.</option>
 						</select>
-						<input class="text" type="text" style="width: 80%;" name="name" value="" required>
+						<input class="text" type="text" style="width: 80%;" name="name" placeholder="Name" value="" required>
 					</div>
 					<div class="form-group"><!--address-->
 						<h4>Address :</h4>
 						<input type="text" class="text" style="width: 50%; margin-right: -4px;" name="housest" placeholder="House num, Street" value="" required>
 						<input type="text" class="text" style="width: 50%; margin-right: -4px;" name="locality" placeholder="Locality" value="" required>
 						<select id="selectcity" name="city" onchange="showCityOtherInput.call(this, event)" style="width: 50%; margin-right: -4px;" required>
-							<option value="Chennai">Chennai</option>
+							<option value="" hidden>City</option>
+							{% for city in cities %}
+								<option value="{{city.city}}">{{city.city}}</option>
+							{% endfor %}
 							<option value="other">Other</option>
 						</select>
 						<select id="selectstate" name="state" onchange="showStateOtherInput.call(this, event)" style="width: 50%; margin-right: -4px;" required>
-							<option value="Tamil Nadu">Tamil Nadu</option>
+							<option value="" hidden>State</option>
+							{% for state in states %}
+								<option value="{{state.state}}">{{state.state}}</option>
+							{% endfor %}
 							<option value="other">Other</option>
 						</select>
 						<input type="text" class="text" style="width: 50%; margin-right: -4px;display: none;" id="cityotherinput" name="othercity" placeholder="City" value="">
 						<input type="text" class="text" style="width: 50%; margin-right: -4px;display: none;" id="stateotherinput" name="otherstate" placeholder="State" value="">
-						<input type="text" class="text" style="width: 50%; margin-right: -4px;" name="pincode" placeholder="Pincode" value="" required>
+						<input type="text" class="text" style="width: 50%; margin-right: -4px;display: block;" name="pincode" placeholder="Pincode" value="" required>
 					</div>
 					<div id="phone" class="form-group"><!--phone-->
 						<h4>Phone Number :</h4>
@@ -94,7 +100,7 @@
 					<div class="form-group"><!--familyname-->
 						<h4>Family Name :</h4>
 						<select name="familyname" onchange="showFamilyOtherInput.call(this, event)" required>
-							<option value=""></option>
+							<option value="" hidden>Family Name</option>
 							{% for familyname in familynames %}
 								<option value="{{familyname.name}}">{{familyname.name}}</option>
 							{% endfor %}
@@ -131,12 +137,18 @@
 					document.getElementById("cityotherinput").style.display = "initial";
 				} else {
 					document.getElementById("cityotherinput").style.display = "none";
+					document.getElementById("stateotherinput").style.display = "none";
 				}
 			}
 			function showStateOtherInput(event) {
 				if (this.options[this.selectedIndex].text == "Other") {
+					document.getElementById("selectcity").selectedIndex = document.getElementById("selectcity").childElementCount - 1;
+					document.getElementById("cityotherinput").style.display = "initial";
 					document.getElementById("stateotherinput").style.display = "initial";
 				} else {
+					if (document.getElementById("selectcity").selectedIndex == document.getElementById("selectcity").childElementCount - 1) {
+						document.getElementById("selectcity").selectedIndex = 0;
+					}
 					document.getElementById("stateotherinput").style.display = "none";
 				}
 			}
