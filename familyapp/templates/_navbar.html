@@ -15,7 +15,7 @@
 </style>
 <nav class="navbar navbar-expand-md navbar-dark bg-dark sticky-top font-size">
 	{% if session.admin %}
-		<a class="navbar-brand bold-size" href="/admin/dashboard">Z O R G</a>
+		<a class="navbar-brand bold-size" href="/admin/dashboard">Z Y P E R</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
         <div class="collapse navbar-collapse" id="navbarResponsive">
             <ul class="navbar-nav navbar-right ml-auto">
@@ -25,16 +25,16 @@
         </div>
     {% else %}
 		{% if session.logged_in %}
-            <a class="navbar-brand bold-size" href="/index">Z O R G</a>
+            <a class="navbar-brand bold-size" href="/index/filter/default/default">Z Y P E R</a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
             <div class="collapse navbar-collapse" id="navbarResponsive">
                 <ul class="navbar-nav navbar-right ml-auto">
-                    <li><a class="nav-link active" href="/index">Index</a></li>
+                    <li><a class="nav-link active" href="/index/filter/default/default">Index</a></li>
                     <li><a class="nav-link active" href="/logout">Logout</a></li>
                 </ul>
             </div>
         {% else %}
-            <a class="navbar-brand bold-size" href="/">Z O R G</a>
+            <a class="navbar-brand bold-size" href="/">Z Y P E R</a>
 		{% endif %}
 	{% endif %}
 </nav>

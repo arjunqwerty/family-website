@@ -64,43 +64,40 @@
 							<option value="Ms. ">Ms.</option>
 							<option value="Dr. ">Dr.</option>
 						</select>
-						<input class="text" type="text" style="width: 80%;" name="name" placeholder="Name" value="" required>
+						<input class="text" type="text" style="width: 80%;" name="name" placeholder="Name" required>
 					</div>
 					<div class="form-group"><!--address-->
 						<h4>Address :</h4>
-						<input type="text" class="text" style="width: 50%; margin-right: -4px;" name="housest" placeholder="House num, Street" value="" required>
-						<input type="text" class="text" style="width: 50%; margin-right: -4px;" name="locality" placeholder="Locality" value="" required>
-						<select id="selectcity" name="city" onchange="showCityOtherInput.call(this, event)" style="width: 50%; margin-right: -4px;" required>
-							<option value="" hidden>City</option>
-							{% for city in cities %}
-								<option value="{{city.city}}">{{city.city}}</option>
+						<input type="text" class="text" style="width: 50%; margin-right: -4px;" name="housest" placeholder="Address" required>
+						<input type="text" class="text" style="width: 50%; margin-right: -4px;" name="locality" placeholder="Landmark">
+						<select id="selectcountry" name="country" onchange="showState()" style="width: 50%; margin-right: -4px;" required>
+							<option hidden>Country</option>
+							{% for country in country %}
+								<option value="{{country[1]}} | {{country[0]}}">{{country[1]}}</option>
 							{% endfor %}
-							<option value="other">Other</option>
 						</select>
-						<select id="selectstate" name="state" onchange="showStateOtherInput.call(this, event)" style="width: 50%; margin-right: -4px;" required>
-							<option value="" hidden>State</option>
-							{% for state in states %}
-								<option value="{{state.state}}">{{state.state}}</option>
-							{% endfor %}
-							<option value="other">Other</option>
+						<select id="selectstate" name="state" onchange="showCity()" style="width: 50%; margin-right: -4px;" required>
+							<option hidden>State</option>
 						</select>
-						<input type="text" class="text" style="width: 50%; margin-right: -4px;display: none;" id="cityotherinput" name="othercity" placeholder="City" value="">
-						<input type="text" class="text" style="width: 50%; margin-right: -4px;display: none;" id="stateotherinput" name="otherstate" placeholder="State" value="">
-						<input type="text" class="text" style="width: 50%; margin-right: -4px;display: block;" name="pincode" placeholder="Pincode" value="" required>
+						<select id="selectcity" name="city" style="width: 50%; margin-right: -4px;" required>
+							<option hidden>City</option>
+							<option value="">Select State</option>
+						</select>
+						<input type="tel" style="width: 50%; margin-right: -4px;" name="pincode" placeholder="Pincode" pattern="[0-9]{[0-10]}" title="Enter only numbers" required>
 					</div>
 					<div id="phone" class="form-group"><!--phone-->
 						<h4>Phone Number :</h4>
-						<input type="text" class="text" style="width: 50%;" name="phone" value="{{phonenum}}" required readonly>
-						<a href="#addphonenum" class="btn btn-default" style="width: 50%; margin-right: -4px;" data-toggle="tab" onclick="showPhoneInput.call(this, event)">Add Phone Number</a>
+						<input type="text" class="text" style="width: 66.66%;" name="phone" value="{{phonenum}}" required readonly>
+						<a id="extraphone3" href="#addphonenum" class="btn btn-default" style="width: 33.33%; margin-right: -4px;" data-toggle="tab" onclick="showPhoneInput()">Add Phone Number</a>
 					</div>
 					<div id="datetime" class="form-group">
 						<h4>Date of Birth :</h4>
-						<input type="date" class="text" name="dob" value="" required>
+						<input type="date" class="text" name="dob" required>
 					</div>
 					<div class="form-group"><!--familyname-->
 						<h4>Family Name :</h4>
-						<select name="familyname" onchange="showFamilyOtherInput.call(this, event)" required>
-							<option value="" hidden>Family Name</option>
+						<select id="familynames" name="familyname" onchange="showFamilyOtherInput()" required>
+							<option hidden>Family Name</option>
 							{% for familyname in familynames %}
 								<option value="{{familyname.name}}">{{familyname.name}}</option>
 							{% endfor %}
@@ -119,55 +116,132 @@
 			</div>
 		</form>
 		<script>
-			var array = document.getElementsByName("familyname").item(0).children;
-			for (let index = 0; index < array.length; index++) {
-				if (array.item(index).value == "") {
-					document.getElementsByName("familyname").item(0).children.item(index).selected = true;
-				}
-			}
-			function showFamilyOtherInput(event) {
-				if (this.options[this.selectedIndex].text == "Other") {
+			document.getElementById("selectcountry").options[103].selected = true;
+			showState();
+			function showFamilyOtherInput() {
+				thist = document.getElementById("familynames");
+				if (thist.options[thist.selectedIndex].text == "Other") {
 					document.getElementById("familyotherinput").style.display = "block";
 				} else {
 					document.getElementById("familyotherinput").style.display = "none";
 				}
 			}
-			function showCityOtherInput(event) {
-				if (this.options[this.selectedIndex].text == "Other") {
-					document.getElementById("cityotherinput").style.display = "initial";
-				} else {
-					document.getElementById("cityotherinput").style.display = "none";
-					document.getElementById("stateotherinput").style.display = "none";
+			function eraseoptions(elementid, check) {
+				var options = document.getElementById(elementid);
+				i = 1;
+				while (i < options.length) {
+					var num =  options.length
+					options.removeChild(options.lastElementChild);
+				}
+				if (elementid === "selectcity" && check ==="1") {
+					var a = document.createElement("option");
+					a.setAttribute("value", "");
+					a.innerHTML = "Select State";
+					options.appendChild(a);
 				}
 			}
-			function showStateOtherInput(event) {
-				if (this.options[this.selectedIndex].text == "Other") {
-					document.getElementById("selectcity").selectedIndex = document.getElementById("selectcity").childElementCount - 1;
-					document.getElementById("cityotherinput").style.display = "initial";
-					document.getElementById("stateotherinput").style.display = "initial";
-				} else {
-					if (document.getElementById("selectcity").selectedIndex == document.getElementById("selectcity").childElementCount - 1) {
-						document.getElementById("selectcity").selectedIndex = 0;
+			function showState() {
+				eraseoptions("selectstate", "2");
+				eraseoptions("selectcity", "1");
+				thist = document.getElementById("selectcountry");
+				var country = thist.options[thist.selectedIndex].value;
+				var countryid = country.split(" | ")[1];
+				var states = "{{states}}".split("[");
+				for (let i = 2; i < states.length; i++) {
+					var coloumns = states[i].replace("],",'').split(",");
+					if (coloumns[0] == countryid) {
+						var statename = coloumns[2].replace("&#39;","");
+						var statename = statename.replace("&#39;","");
+						var statevalue = [statename, "|", coloumns[1]];
+						var x = document.createElement("option");
+						x.setAttribute("value", statevalue.join(""));
+						var z = document.createTextNode(statename);
+						x.appendChild(z);
+						document.getElementById("selectstate").appendChild(x);
 					}
-					document.getElementById("stateotherinput").style.display = "none";
 				}
 			}
-			function showPhoneInput(event) {
-				var x = document.createElement("INPUT");
-				x.setAttribute("type", "tel");
-				x.setAttribute("pattern", "[+]{1}[0-9]/[-]{[1-5} [0-9]{[10-20]}");
-				x.setAttribute("style", "width: 50%;")
-				x.setAttribute("required", "");
-				document.getElementById("phone").appendChild(x);
+			function showCity() {
+				eraseoptions("selectcity", "2");
+				thist = document.getElementById("selectstate");
+				var state = thist.options[thist.selectedIndex].value;
+				var stateid = state.split(" | ")[1];
+				var cities = "{{cities}}".split("[");
+				for (let i = 2; i < cities.length; i++) {
+					var coloumns = cities[i].replace("],",'').split(",");
+					if (coloumns[0] == stateid) {
+						var cityname = coloumns[2].replace("&#39;","");
+						var cityname = cityname.replace("&#39;","");
+						var x = document.createElement("option");
+						x.setAttribute("value", cityname);
+						var z = document.createTextNode(cityname);
+						x.appendChild(z);
+						document.getElementById("selectcity").appendChild(x);
+					}
+				}
+			}
+			function showPhoneInput() {
+				var anotherphone = document.getElementById("phone");
+				var lastelement = anotherphone.children.length;
+				var rowdiv = document.createElement("div");
+				var predivid = document.getElementById("phone").children.item(lastelement-1).getAttribute("id").replace("extraphone", "");
+				var nowdivid = Number(predivid) + 1;
+				divid = "extraphone" + String(nowdivid);
+				rowdiv.setAttribute("id", divid);
+				rowdiv.setAttribute("class", "row");
+				rowdiv.setAttribute("style", "margin: 0px;")
+				anotherphone.appendChild(rowdiv);
+				/**/
+				var select = document.createElement("select");
+				select.setAttribute("class", "col-10");
+				select.setAttribute("style", "padding-right: 0px; padding-left: 0px; font-size: small; margin-top: 2px; margin-bottom: 2px;");
+				anotherphone.children.item(lastelement).appendChild(select);
+				/**/
+				var phonecode = "{{phonecode}}".split("[").slice(2);
+				for (let i = 0; i < 250; i++) {
+					var phonedet = phonecode[i].split(", ").slice(1);
+					var phone = phonedet[1].replace("&#39;","")
+					var phone = phone.replace("&#39;]","")
+					var phonecount = phonedet[0].replace("&#39;","")
+					var phonecount = phonecount.replace("&#39;","")
+					var option = document.createElement("option");
+					option.setAttribute("value", phone);
+					option.innerHTML = phone + " " + phonecount;
+					anotherphone.children.item(lastelement).children.item(0).appendChild(option);
+				}
+				/**/
+				var input = document.createElement("INPUT");
+				input.setAttribute("type", "tel");
+				input.setAttribute("class", "col-30");
+				input.setAttribute("pattern", "[0-9]{[0-20]}");
+				input.setAttribute("title", "Enter only numbers")
+				input.setAttribute("style", "padding: 5px");
+				input.setAttribute("required", "");
+				anotherphone.children.item(lastelement).appendChild(input);
+				/**/
+				var deletebutton = document.createElement("button");
+				deletebutton.setAttribute("onclick", "deletePhone("+divid+")")
+				deletebutton.setAttribute("class", "btn btn-default");
+				deletebutton.setAttribute("style", "border-color: transparent")
+				deletebutton.setAttribute("data-toggle", "tab");
+				deletebutton.innerHTML = "X";
+				anotherphone.children.item(lastelement).appendChild(deletebutton);
+				/**/
+				anotherphone.children.item(lastelement).children.item(0).options[102].selected = true;
+			}
+			function deletePhone(divid) {
+				divid.remove();
 			}
 			function phoneNumberCollect() {
 				var phoneParent = document.getElementById("phone");
 				var last = phoneParent.children.length;
-				var combinedphone = phoneParent.children.item(1).value;
-				for (let index = 3; index < last; index++) {
-					combinedphone = combinedphone + ", " + phoneParent.children.item(index).value;
+				if (last > 3){
+					var combinedphone = phoneParent.children.item(1).value;
+					for (let i = 3; i < last; i++) {
+						combinedphone = combinedphone + ", " + phoneParent.children.item(i).children.item(0).value + " " + phoneParent.children.item(i).children.item(1).value;
+					}
+					document.getElementById("phone").children.item(1).value = combinedphone;
 				}
-				document.getElementById("phone").children.item(1).value = combinedphone;
 			}
 		</script>
 		<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>

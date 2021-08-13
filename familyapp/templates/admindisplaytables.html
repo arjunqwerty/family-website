@@ -11,12 +11,15 @@
 			.btnstretch {
 				width: 100%;
 			}
+			.btn-default {
+				border: 1px solid #000;
+			}
 		</style>
 	</head>
 	<body>
 		{% include "_navbar.html" %}
 		{% include "_messages.html" %}
-		<h1 class="text-center">{{table}}</h1>
+		<h1 class="text-center">{{table}} {{tableid}}</h1>
 		{% if registerdet != asdfljhj %}
 			<h1>Register Details</h1>
 			<table class="table table-striped">
@@ -56,9 +59,10 @@
 					<th>Name</th>
 					<th>Date of Birth</th>
 					<th>House Street</th>
-					<th>Locality</th>
-					<th>City</th>
+					<th>Landmark</th>
+					<th>Country</th>
 					<th>State</th>
+					<th>City</th>
 					<th>Pincode</th>
 					<th>Phone Number</th>
 					<th>Family Name</th>
@@ -74,8 +78,9 @@
 						<td>{{familydet.dateofbirth}}</td>
 						<td>{{familydet.housestreet}}</td>
 						<td>{{familydet.neighbourhood}}</td>
-						<td>{{familydet.city}}</td>
+						<td>{{familydet.country}}</td>
 						<td>{{familydet.state}}</td>
+						<td>{{familydet.city}}</td>
 						<td>{{familydet.pincode}}</td>
 						<td>{{familydet.phone}}</td>
 						<td>{{familydet.familyname}}</td>

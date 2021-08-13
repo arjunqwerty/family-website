@@ -1,10 +1,10 @@
 from flask import render_template, flash, redirect, url_for, session, request
 from functools import wraps
-import random as rd
-from sqlalchemy import asc, desc
+from sqlalchemy import asc, desc, func
+import pickle
 
 from familyapp import app, db
-from familyapp.model import RegisterDetails, FamilyDetails, FamilyNames, CityState
+from familyapp.model import RegisterDetails, FamilyDetails, FamilyNames, Relation
 
 def is_logged_in(f):
     @wraps(f)
@@ -26,20 +26,33 @@ def is_admin(f):
             return redirect(url_for("home"))
     return wrap
 
+def getbinarydat(filename):
+    lst = []
+    f = open("familyapp/" + filename, "rb")
+    try:
+        while True:
+            line = pickle.load(f)
+            lst.append(line)
+    except EOFError:
+        f.close()
+    return lst
+
 @app.route("/register", methods = ["GET", "POST"])
 def register():
     if request.method == "POST":
         name = request.form["name"]
+        phonecode = request.form["phonecode"]
         phone = request.form["phone"]
+        phone = phonecode + " " + phone
         password = request.form["password"]
-        famdet = FamilyDetails("", "", "2000-01-01", "", "", "", "", "", phone, "")
+        famdet = FamilyDetails("", "", "2000-01-01", "", "", "", "", "", "", phone, "")
         db.session.add(famdet)
-        data = RegisterDetails(name, phone, password, " ")
+        data = RegisterDetails(name, phone, password, "")
         db.session.add(data)
         db.session.commit()
         flash("Please wait for approval from admin", "success")
         return redirect(url_for("home"))
-    return render_template("register.html")
+    return render_template("login.html")
 
 @app.route("/", methods = ["GET", "POST"])
 @app.route("/login", methods = ["GET", "POST"])
@@ -64,7 +77,7 @@ def home():
                 return render_template("login.html")
             else:
                 user = db.session.query(RegisterDetails).filter(RegisterDetails.name == peoplename).first()
-                if user.approval == "approved":
+                if user.approval == "Approved":
                     if password ==  user.password:
                         session["logged_in"] = True
                         session["username"] = peoplename
@@ -78,12 +91,13 @@ def home():
                         return render_template("login.html")
                 else:
                     flash("Please wait for admin approval", "danger")
-                    flash("Contact T R Murali - 9952099044", "info")
+                    flash("Contact T R Murali - 9952099044 or T M Arjun - 9489826248", "info")
                     return render_template("login.html")
     else:
-        return render_template("login.html")
+        lstphonecodes = getbinarydat("phonecode.dat")
+        return render_template("login.html", phonecodes = lstphonecodes)
 
-@app.route("/index", methods = ["GET", "POST"])
+@app.route("/index", methods = ["GET", "POST"]) 
 @is_logged_in
 def index():
     usercode = session["userid"]
@@ -134,16 +148,132 @@ def index():
 def indexsorting(sortid, sortby):
     session["sortid"] = sortid
     session["sortby"] = sortby
-    return redirect(url_for("index"))
+    if session["filter"]:
+        return redirect(url_for("index"))
+    else:
+        return redirect(url_for("indexfiltering", coloumn = session["filtercoloumn"], rowval = session["filterrowval"]))
 
 @app.route("/index/filter/<coloumn>/<rowval>", methods = ["GET", "POST"])
 def indexfiltering(coloumn, rowval):
+    session["filtercoloumn"] = coloumn
+    session["filterrowval"] = rowval
+    usercode = session["userid"]
+    person = db.session.query(FamilyDetails).filter(FamilyDetails.id == usercode).first()
     session["filter"] = False
-    if coloumn == "Address":
-        details = db.session.query(FamilyDetails).filter(FamilyDetails.city == rowval).order_by(FamilyDetails.id.asc()).all()
+    if coloumn == "Name":
+        session["name"] = person.salutation + person.name
+        sorting = session["sortid"]
+        addressdata = db.session.query(FamilyDetails).distinct(FamilyDetails.city).all()
+        familynames = db.session.query(FamilyNames).all()
+        if session["sortby"] == "asc":
+            if sorting == "name":
+                details = db.session.query(FamilyDetails).filter(func.lower(FamilyDetails.name).startswith(rowval.lower())).order_by(asc(FamilyDetails.name)).all()
+                return render_template("index.html", data = details, addressdata = addressdata, familynames = familynames)
+            elif sorting == "phone":
+                details = db.session.query(FamilyDetails).filter(func.lower(FamilyDetails.name).startswith(rowval.lower())).order_by(asc(FamilyDetails.phone)).all()
+                return render_template("index.html", data = details, addressdata = addressdata, familynames = familynames)
+            elif sorting == "dob":
+                details = db.session.query(FamilyDetails).filter(func.lower(FamilyDetails.name).startswith(rowval.lower())).order_by(desc(FamilyDetails.dateofbirth)).all()
+                return render_template("index.html", data = details, addressdata = addressdata, familynames = familynames)
+            elif sorting == "familyname":
+                details = db.session.query(FamilyDetails).filter(func.lower(FamilyDetails.name).startswith(rowval.lower())).order_by(asc(FamilyDetails.familyname)).all()
+                return render_template("index.html", data = details, addressdata = addressdata, familynames = familynames)
+            else:
+                details = db.session.query(FamilyDetails).filter(func.lower(FamilyDetails.name).startswith(rowval.lower())).order_by(asc(FamilyDetails.id)).all()
+                return render_template("index.html", data = details, addressdata = addressdata, familynames = familynames)
+        else:
+            if sorting == "name":
+                details = db.session.query(FamilyDetails).filter(func.lower(FamilyDetails.name).startswith(rowval.lower())).order_by(desc(FamilyDetails.name)).all()
+                return render_template("index.html", data = details, addressdata = addressdata, familynames = familynames)
+            elif sorting == "phone":
+                details = db.session.query(FamilyDetails).filter(func.lower(FamilyDetails.name).startswith(rowval.lower())).order_by(desc(FamilyDetails.phone)).all()
+                return render_template("index.html", data = details, addressdata = addressdata, familynames = familynames)
+            elif sorting == "dob":
+                details = db.session.query(FamilyDetails).filter(func.lower(FamilyDetails.name).startswith(rowval.lower())).order_by(asc(FamilyDetails.dateofbirth)).all()
+                return render_template("index.html", data = details, addressdata = addressdata, familynames = familynames)
+            elif sorting == "familyname":
+                details = db.session.query(FamilyDetails).filter(func.lower(FamilyDetails.name).startswith(rowval.lower())).order_by(desc(FamilyDetails.familyname)).all()
+                return render_template("index.html", data = details, addressdata = addressdata, familynames = familynames)
+            else:
+                details = db.session.query(FamilyDetails).filter(func.lower(FamilyDetails.name).startswith(rowval.lower())).order_by(desc(FamilyDetails.id)).all()
+                return render_template("index.html", data = details, addressdata = addressdata, familynames = familynames)
+    elif coloumn == "Address":
+        session["name"] = person.salutation + person.name
+        sorting = session["sortid"]
+        addressdata = db.session.query(FamilyDetails).distinct(FamilyDetails.city).all()
+        familynames = db.session.query(FamilyNames).all()
+        if session["sortby"] == "asc":
+            if sorting == "name":
+                details = db.session.query(FamilyDetails).filter(FamilyDetails.city == rowval).order_by(asc(FamilyDetails.name)).all()
+                return render_template("index.html", data = details, addressdata = addressdata, familynames = familynames)
+            elif sorting == "phone":
+                details = db.session.query(FamilyDetails).filter(FamilyDetails.city == rowval).order_by(asc(FamilyDetails.phone)).all()
+                return render_template("index.html", data = details, addressdata = addressdata, familynames = familynames)
+            elif sorting == "dob":
+                details = db.session.query(FamilyDetails).filter(FamilyDetails.city == rowval).order_by(desc(FamilyDetails.dateofbirth)).all()
+                return render_template("index.html", data = details, addressdata = addressdata, familynames = familynames)
+            elif sorting == "familyname":
+                details = db.session.query(FamilyDetails).filter(FamilyDetails.city == rowval).order_by(asc(FamilyDetails.familyname)).all()
+                return render_template("index.html", data = details, addressdata = addressdata, familynames = familynames)
+            else:
+                details = db.session.query(FamilyDetails).filter(FamilyDetails.city == rowval).order_by(asc(FamilyDetails.id)).all()
+                return render_template("index.html", data = details, addressdata = addressdata, familynames = familynames)
+        else:
+            if sorting == "name":
+                details = db.session.query(FamilyDetails).filter(FamilyDetails.city == rowval).order_by(desc(FamilyDetails.name)).all()
+                return render_template("index.html", data = details, addressdata = addressdata, familynames = familynames)
+            elif sorting == "phone":
+                details = db.session.query(FamilyDetails).filter(FamilyDetails.city == rowval).order_by(desc(FamilyDetails.phone)).all()
+                return render_template("index.html", data = details, addressdata = addressdata, familynames = familynames)
+            elif sorting == "dob":
+                details = db.session.query(FamilyDetails).filter(FamilyDetails.city == rowval).order_by(asc(FamilyDetails.dateofbirth)).all()
+                return render_template("index.html", data = details, addressdata = addressdata, familynames = familynames)
+            elif sorting == "familyname":
+                details = db.session.query(FamilyDetails).filter(FamilyDetails.city == rowval).order_by(desc(FamilyDetails.familyname)).all()
+                return render_template("index.html", data = details, addressdata = addressdata, familynames = familynames)
+            else:
+                details = db.session.query(FamilyDetails).filter(FamilyDetails.city == rowval).order_by(desc(FamilyDetails.id)).all()
+                return render_template("index.html", data = details, addressdata = addressdata, familynames = familynames)
     elif coloumn == "FamilyName":
-        details = db.session.query(FamilyDetails).filter(FamilyDetails.familyname == rowval).order_by(FamilyDetails.id.asc()).all()
-    return render_template("index.html", data = details, addressdata = db.session.query(FamilyDetails).distinct(FamilyDetails.city).all(), familynames = db.session.query(FamilyNames).all())
+        session["name"] = person.salutation + person.name
+        sorting = session["sortid"]
+        addressdata = db.session.query(FamilyDetails).distinct(FamilyDetails.city).all()
+        familynames = db.session.query(FamilyNames).all()
+        if session["sortby"] == "asc":
+            if sorting == "name":
+                details = db.session.query(FamilyDetails).filter(FamilyDetails.familyname == rowval).order_by(asc(FamilyDetails.name)).all()
+                return render_template("index.html", data = details, addressdata = addressdata, familynames = familynames)
+            elif sorting == "phone":
+                details = db.session.query(FamilyDetails).filter(FamilyDetails.familyname == rowval).order_by(asc(FamilyDetails.phone)).all()
+                return render_template("index.html", data = details, addressdata = addressdata, familynames = familynames)
+            elif sorting == "dob":
+                details = db.session.query(FamilyDetails).filter(FamilyDetails.familyname == rowval).order_by(desc(FamilyDetails.dateofbirth)).all()
+                return render_template("index.html", data = details, addressdata = addressdata, familynames = familynames)
+            elif sorting == "familyname":
+                details = db.session.query(FamilyDetails).filter(FamilyDetails.familyname == rowval).order_by(asc(FamilyDetails.familyname)).all()
+                return render_template("index.html", data = details, addressdata = addressdata, familynames = familynames)
+            else:
+                details = db.session.query(FamilyDetails).filter(FamilyDetails.familyname == rowval).order_by(asc(FamilyDetails.id)).all()
+                return render_template("index.html", data = details, addressdata = addressdata, familynames = familynames)
+        else:
+            if sorting == "name":
+                details = db.session.query(FamilyDetails).filter(FamilyDetails.familyname == rowval).order_by(desc(FamilyDetails.name)).all()
+                return render_template("index.html", data = details, addressdata = addressdata, familynames = familynames)
+            elif sorting == "phone":
+                details = db.session.query(FamilyDetails).filter(FamilyDetails.familyname == rowval).order_by(desc(FamilyDetails.phone)).all()
+                return render_template("index.html", data = details, addressdata = addressdata, familynames = familynames)
+            elif sorting == "dob":
+                details = db.session.query(FamilyDetails).filter(FamilyDetails.familyname == rowval).order_by(asc(FamilyDetails.dateofbirth)).all()
+                return render_template("index.html", data = details, addressdata = addressdata, familynames = familynames)
+            elif sorting == "familyname":
+                details = db.session.query(FamilyDetails).filter(FamilyDetails.familyname == rowval).order_by(desc(FamilyDetails.familyname)).all()
+                return render_template("index.html", data = details, addressdata = addressdata, familynames = familynames)
+            else:
+                details = db.session.query(FamilyDetails).filter(FamilyDetails.familyname == rowval).order_by(desc(FamilyDetails.id)).all()
+                return render_template("index.html", data = details, addressdata = addressdata, familynames = familynames)
+    else:
+        session["filter"] = True
+        return redirect(url_for("indexsorting", sortid = "default", sortby = "asc"))
 
 @app.route("/details", methods = ["GET", "POST"])
 @is_logged_in
@@ -160,20 +290,11 @@ def adddetails():
         name = request.form["name"]
         housest = request.form["housest"]
         locality = request.form["locality"]
-        othercity = request.form["city"]
-        otherstate = request.form["state"]
-        if othercity == "other":
-            city = request.form["othercity"]
-        else:
-            city = othercity
-        if otherstate == "other":
-            state = request.form["otherstate"]
-        else:
-            state = otherstate
-        if othercity == "other":
-            data = CityState(city, state)
-            db.session.add(data)
-            db.session.commit()
+        country = request.form["country"]
+        country = country[:country.find(" |"):]
+        state = request.form["state"]
+        state = state[:state.find(" |"):].strip(" ")
+        city = request.form["city"].strip(" ")
         pincode = request.form["pincode"]
         dob = request.form["dob"]
         phone = request.form["phone"]
@@ -189,16 +310,24 @@ def adddetails():
         update.name = name
         update.housestreet = housest
         update.neighbourhood = locality
-        update.city = city
+        update.country = country
         update.state = state
+        update.city = city
         update.pincode = pincode
         update.dateofbirth = dob
         update.phone = phone
         update.familyname = familyname
         db.session.commit()
+        relationdet = Relation(update.id, name, "", "", "", "", "")
+        db.session.add(relationdet)
+        db.session.commit()
         flash("Details added", "success")
         return redirect(url_for("index"))
-    return render_template("adddetails.html", data = update, familynames = db.session.query(FamilyNames).all(), phonenum = db.session.query(FamilyDetails).filter(FamilyDetails.id == usercode).first().phone, cities = db.session.query(CityState).distinct(CityState.city).all(), states = db.session.query(CityState).distinct(CityState.state).all())
+    lstcount = getbinarydat("country.dat")
+    lststate = getbinarydat("state.dat")
+    lstcity = getbinarydat("city.dat")
+    lstphone = getbinarydat("phonecode.dat")
+    return render_template("adddetails.html", data = update, familynames = db.session.query(FamilyNames).all(), phonenum = db.session.query(FamilyDetails).filter(FamilyDetails.id == usercode).first().phone, country = lstcount, states = lststate, cities = lstcity, phonecode = lstphone)###
 
 @app.route("/details/edit", methods = ["GET", "POST"])
 def editdetails():
@@ -207,18 +336,23 @@ def editdetails():
         people = db.session.query(FamilyDetails).filter(FamilyDetails.id == identifier).first()
         housest = request.form["housest"]
         locality = request.form["locality"]
-        city = request.form["city"]
+        country = request.form["country"]
+        country = country[:country.find(" |"):]
         state = request.form["state"]
+        state = state[:state.find(" |"):].strip(" ")
+        city = request.form["city"].strip(" ")
         pincode = request.form["pincode"]
         phone = request.form["phone"]
         if housest != people.housestreet:
             people.housestreet = housest
         if locality != people.neighbourhood:
             people.neighbourhood = locality
-        if city != people.city:
-            people.city = city
+        if country != people.country:
+            people.country = country
         if state != people.state:
             people.state = state
+        if city != people.city:
+            people.city = city
         if pincode != people.pincode:
             people.pincode = pincode
         if phone != people.phone:
@@ -226,7 +360,11 @@ def editdetails():
         db.session.commit()
         flash("Profile updated", "success")
         return redirect(url_for("index"))
-    return render_template("editdetails.html", profile = db.session.query(FamilyDetails).filter(FamilyDetails.id == identifier).first())
+    lstcount = getbinarydat("country.dat")
+    lststate = getbinarydat("state.dat")
+    lstcity = getbinarydat("city.dat")
+    lstphone = getbinarydat("phonecode.dat")
+    return render_template("editdetails.html", profile = db.session.query(FamilyDetails).filter(FamilyDetails.id == identifier).first(), country = lstcount, states = lststate, cities = lstcity, phonecode = lstphone)
 
 @app.route("/logout")
 @is_logged_in
@@ -240,11 +378,10 @@ def logout():
 def admindashboard():
     return render_template("admindashboard.html")
 
-#### Should add a route for admin to give approval to the requests
 @app.route("/admin/approval/<stat>/<idapprove>", methods = ["GET", "POST"])
 def adminapproval(stat,idapprove):
     if stat == "none":
-        return render_template("approval.html", data = db.session.query(RegisterDetails).filter(RegisterDetails.approval == " ").all())
+        return render_template("adminapproval.html", data = db.session.query(RegisterDetails).filter(RegisterDetails.approval == "").all())
     elif stat == "approved":
         profile = db.session.query(RegisterDetails).filter(RegisterDetails.id == idapprove).first()
         profile.approval = "approved"
@@ -263,15 +400,13 @@ def adminapproval(stat,idapprove):
 def displaytables(number):
     session["displaynumber"] = number
     if number == "All":
-        return render_template("admindisplaytables.html", table = "Display " + number, registerdet = db.session.query(RegisterDetails).order_by(RegisterDetails.id.asc()).all(), familydet = db.session.query(FamilyDetails).order_by(FamilyDetails.id.asc()).all(), familynames = db.session.query(FamilyNames).order_by(FamilyNames.id.asc()).all(), citystate = db.session.query(CityState).order_by(CityState.id.asc()).all())
+        return render_template("admindisplaytables.html", table = "Display " + number, registerdet = db.session.query(RegisterDetails).order_by(RegisterDetails.id.asc()).all(), familydet = db.session.query(FamilyDetails).order_by(FamilyDetails.id.asc()).all(), familynames = db.session.query(FamilyNames).order_by(FamilyNames.id.asc()).all())
     elif number == "1":
         return render_template("admindisplaytables.html", table = "Display " + number, registerdet = db.session.query(RegisterDetails).order_by(RegisterDetails.id.asc()).all())
     elif number == "2":
         return render_template("admindisplaytables.html", table = "Display " + number, familydet = db.session.query(FamilyDetails).order_by(FamilyDetails.id.asc()).all())
     elif number == "3":
         return render_template("admindisplaytables.html", table = "Display " + number, familynames = db.session.query(FamilyNames).order_by(FamilyNames.id.asc()).all())
-    elif number == "4":
-        return render_template("admindisplaytables.html", table = "Display " + number, citystate = db.session.query(CityState).order_by(CityState.id.asc()).all())
     else:
         flash("No such table exists", "danger")
         return redirect(url_for("admindashboard"))
@@ -280,43 +415,53 @@ def displaytables(number):
 @is_admin
 def addtablerow(addrownumber):
     session["number"] = addrownumber
-    if request.method == "POST":
-        if addrownumber == "1and2":
+    if addrownumber == "1and2":
+        if request.method == "POST":
             username = request.form["username"]
-            mainphone = request.form["mainphone"]
+            phonecode = request.form["phonecode"]
+            mainphone = phonecode + " " + request.form["mainphone"]
             password = request.form["password"]
             approval = request.form["approval"]
             salutation = request.form["salutation"]
             name = request.form["name"]
-            dateofbirth = request.form["dateofbirth"]
-            housestreet = request.form["housestreet"]
-            neighbourhood = request.form["neighbourhood"]
-            city = request.form["city"]
+            housestreet = request.form["housest"]
+            neighbourhood = request.form["locality"]
+            country = request.form["country"]
+            country = country[:country.find(" |"):]
             state = request.form["state"]
+            state = state[:state.find(" |"):].strip(" ")
+            city = request.form["city"].strip(" ")
             pincode = request.form["pincode"]
+            dateofbirth = request.form["dateofbirth"]
             phone = request.form["phone"]
-            familyname = request.form["familyname"]
+            family = request.form["familyname"]
+            if family == "other":
+                familyname = request.form["otherfamilyname"]
+                data = FamilyNames(familyname)
+                db.session.add(data)
+                db.session.commit()
+            else:
+                familyname = family
             data = RegisterDetails(username, mainphone, password, approval)
             db.session.add(data)
             db.session.commit()
-            data = FamilyDetails(salutation, name, dateofbirth, housestreet, neighbourhood, city, state, pincode, phone, familyname)
+            data = FamilyDetails(salutation, name, dateofbirth, housestreet, neighbourhood, city, state, country, pincode, phone, familyname)
             db.session.add(data)
             db.session.commit()
             return redirect(url_for("admindashboard"))
-        elif addrownumber == "3":
+        lstcount = getbinarydat("country.dat")
+        lststate = getbinarydat("state.dat")
+        lstcity = getbinarydat("city.dat")
+        lstphone = getbinarydat("phonecode.dat")
+        return render_template("adminaddtable.html", familynames = db.session.query(FamilyNames).all(), country = lstcount, states = lststate, cities = lstcity, phonecode = lstphone)
+    elif addrownumber == "3":
+        if request.method == "POST":
             familyname = request.form["familyname"]
             data = FamilyNames(familyname)
             db.session.add(data)
             db.session.commit()
             return redirect(url_for("admindashboard"))
-        elif addrownumber == "4":
-            city = request.form["city"]
-            state = request.form["state"]
-            data = CityState(city, state)
-            db.session.add(data)
-            db.session.commit()
-            return redirect(url_for("admindashboard"))
-    return render_template("adminaddtable.html", familynames = db.session.query(FamilyNames).all())
+        return render_template("adminaddtable.html")
 
 @app.route("/admin/table/row/edit/<edittablenumber>/<identifier>", methods = ["GET", "POST"])
 @is_admin
@@ -327,7 +472,8 @@ def edittableshow(edittablenumber, identifier):
         if identifier != "chooserow":
             if request.method == "POST":
                 username = request.form["username"]
-                mainphone = request.form["mainphone"]
+                phonecode = request.form["phonecode"]
+                mainphone = phonecode + " " + request.form["mainphone"]
                 password = request.form["password"]
                 approval = request.form["approval"]
                 data = db.session.query(RegisterDetails).filter(RegisterDetails.id == identifier).first()
@@ -336,22 +482,48 @@ def edittableshow(edittablenumber, identifier):
                 data.password = password
                 data.approval = approval
                 db.session.commit()
-            return render_template("adminedittable.html", table = "Row Edit " + edittablenumber, register = db.session.query(RegisterDetails).filter(RegisterDetails.id == identifier).first())
-        return render_template("admindisplaytables.html", table = "Row Edit " + edittablenumber, registerdet = db.session.query(RegisterDetails).order_by(RegisterDetails.id.asc()).all())
+                return redirect(url_for("edittableshow", edittablenumber = session["editnumber"], identifier = "chooserow"))
+            lstphone = getbinarydat("phonecode.dat")
+            return render_template("adminedittable.html", table = "Row Edit", tableid = edittablenumber, registerdet = db.session.query(RegisterDetails).filter(RegisterDetails.id == identifier).first(), phonecode = lstphone)
+        return render_template("admindisplaytables.html", table = "Row Edit", tableid = edittablenumber, registerdet = db.session.query(RegisterDetails).order_by(RegisterDetails.id.asc()).all())
     elif edittablenumber == "2":
         if identifier != "chooserow":
             if request.method == "POST":
                 salutation = request.form["salutation"]
                 name = request.form["name"]
-                dateofbirth = request.form["dateofbirth"]
-                housestreet = request.form["housestreet"]
-                neighbourhood = request.form["neighbourhood"]
-                city = request.form["city"]
+                dateofbirth = request.form["dob"]
+                housestreet = request.form["housest"]
+                neighbourhood = request.form["locality"]
+                country = request.form["country"]
+                country = country[:country.find(" |"):]
                 state = request.form["state"]
+                state = state[:state.find(" |"):].strip(" ")
+                city = request.form["city"].strip(" ")
                 pincode = request.form["pincode"]
                 phone = request.form["phone"]
-                familyname = request.form["familyname"]
+                family = request.form["familyname"]
+                if family == "other":
+                    familyname = request.form["otherfamilyname"]
+                    data = FamilyNames(familyname)
+                    db.session.add(data)
+                    db.session.commit()
+                else:
+                    familyname = family
                 data = db.session.query(FamilyDetails).filter(FamilyDetails.id == identifier).first()
+                if housestreet != data.housestreet:
+                    data.housestreet = housestreet
+                if neighbourhood != data.neighbourhood:
+                    data.neighbourhood = neighbourhood
+                if country != data.country:
+                    data.country = country
+                if state != data.state:
+                    data.state = state
+                if city != data.city:
+                    data.city = city
+                if pincode != data.pincode:
+                    data.pincode = pincode
+                if phone != data.phone:
+                    data.phone = phone
                 data.salutation = salutation
                 data.name = name
                 data.dateofbirth = dateofbirth
@@ -363,8 +535,13 @@ def edittableshow(edittablenumber, identifier):
                 data.phone = phone
                 data.familyname = familyname
                 db.session.commit()
-            return render_template("adminedittable.html", table = "Row Edit " + edittablenumber, familydet = db.session.query(FamilyDetails).filter(FamilyDetails.id == identifier).first())
-        return render_template("admindisplaytables.html", table = "Row Edit " + edittablenumber, familydet = db.session.query(FamilyDetails).order_by(FamilyDetails.id.asc()).all())
+                return redirect(url_for("edittableshow", edittablenumber = session["editnumber"], identifier = "chooserow"))
+            lstcount = getbinarydat("country.dat")
+            lststate = getbinarydat("state.dat")
+            lstcity = getbinarydat("city.dat")
+            lstphone = getbinarydat("phonecode.dat")
+            return render_template("adminedittable.html", table = "Row Edit", tableid = edittablenumber, familydet = db.session.query(FamilyDetails).filter(FamilyDetails.id == identifier).first(), familynames = db.session.query(FamilyNames).all(), country = lstcount, states = lststate, cities = lstcity, phonecode = lstphone)
+        return render_template("admindisplaytables.html", table = "Row Edit", tableid = edittablenumber, familydet = db.session.query(FamilyDetails).order_by(FamilyDetails.id.asc()).all())
     elif edittablenumber == "3":
         if identifier != "chooserow":
             if request.method == "POST":
@@ -372,19 +549,9 @@ def edittableshow(edittablenumber, identifier):
                 data = db.session.query(FamilyNames).filter(FamilyDetails.id == identifier).first()
                 data.name = familyname
                 db.session.commit()
-            return render_template("adminedittable.html", table = "Row Edit " + edittablenumber, familynames = db.session.query(FamilyNames).filter(FamilyNames.id == identifier).first())
-        return render_template("admindisplaytables.html", table = "Row Edit " + edittablenumber, familynames = db.session.query(FamilyNames).order_by(FamilyNames.id.asc()).all())
-    elif edittablenumber == "4":
-        if identifier != "chooserow":
-            if request.method == "POST":
-                city = request.form["city"]
-                state = request.form["state"]
-                data = db.session.query(CityState).filter(CityState.id == identifier).first()
-                data.city = city
-                data.state = state
-                db.session.commit()
-            return render_template("adminedittable.html", table = "Row Edit " + edittablenumber, citystate = db.session.query(CityState).filter(CityState.id == identifier).first())
-        return render_template("admindisplaytables.html", table = "Row Edit " + edittablenumber, citystate = db.session.query(CityState).order_by(CityState.id.asc()).all())
+                return redirect(url_for("edittableshow", edittablenumber = session["editnumber"], identifier = "chooserow"))
+            return render_template("adminedittable.html", table = "Row Edit", tableid = edittablenumber, familynames = db.session.query(FamilyNames).filter(FamilyNames.id == identifier).first())
+        return render_template("admindisplaytables.html", table = "Row Edit", tableid = edittablenumber, familynames = db.session.query(FamilyNames).order_by(FamilyNames.id.asc()).all())
     else:
         flash("No such table exists", "danger")
         return redirect(url_for("admindashboard"))
@@ -408,43 +575,32 @@ def deletetablerow(deleterownumber, identifier):
                 data = db.session.query(FamilyNames).filter(FamilyNames.id == identifier).first()
                 db.session.delete(data)
                 db.session.commit()
-            elif deleterownumber == "4":
-                data = db.session.query(CityState).filter(CityState.id == identifier).first()
-                db.session.delete(data)
-                db.session.commit()
             else:
                 flash("No such table exists", "danger")
                 return redirect(url_for("admindashboard"))
             return redirect(url_for("deletetablerow", deleterownumber = session["deletenumber"], identifier = "chooserow"))
-        return render_template("admindisplaytables.html", table = "Row Delete " + session["deletenumber"], registerdet = db.session.query(RegisterDetails).order_by(RegisterDetails.id.asc()).all(), familydet = db.session.query(FamilyDetails).order_by(FamilyDetails.id.asc()).all(), familynames = db.session.query(FamilyNames).order_by(FamilyNames.id.asc()).all(), citystate = db.session.query(CityState).order_by(CityState.id.asc()).all())
+        return render_template("admindisplaytables.html", table = "Row Delete", registerdet = db.session.query(RegisterDetails).order_by(RegisterDetails.id.asc()).all(), familydet = db.session.query(FamilyDetails).order_by(FamilyDetails.id.asc()).all(), familynames = db.session.query(FamilyNames).order_by(FamilyNames.id.asc()).all())
     if session["deletenumber"] == "1":
         if identifier != "chooserow":
             data = db.session.query(RegisterDetails).filter(RegisterDetails.id == identifier).first()
             db.session.delete(data)
             db.session.commit()
             return redirect(url_for("deletetablerow", deleterownumber = deleterownumber, identifier = "chooserow"))
-        return render_template("admindisplaytables.html", table = "Row Delete " + deleterownumber, registerdet = db.session.query(RegisterDetails).order_by(RegisterDetails.id.asc()).all())
+        return render_template("admindisplaytables.html", table = "Row Delete", tableid = deleterownumber, registerdet = db.session.query(RegisterDetails).order_by(RegisterDetails.id.asc()).all())
     elif session["deletenumber"] == "2":
         if identifier != "chooserow":
             data = db.session.query(FamilyDetails).filter(FamilyDetails.id == identifier).first()
             db.session.delete(data)
             db.session.commit()
             return redirect(url_for("deletetablerow", deleterownumber = deleterownumber, identifier = "chooserow"))
-        return render_template("admindisplaytables.html", table = "Row Delete " + deleterownumber, familydet = db.session.query(FamilyDetails).order_by(FamilyDetails.id.asc()).all())
+        return render_template("admindisplaytables.html", table = "Row Delete", tableid = deleterownumber, familydet = db.session.query(FamilyDetails).order_by(FamilyDetails.id.asc()).all())
     elif session["deletenumber"] == "3":
         if identifier != "chooserow":
             data = db.session.query(FamilyNames).filter(FamilyNames.id == identifier).first()
             db.session.delete(data)
             db.session.commit()
             return redirect(url_for("deletetablerow", deleterownumber = deleterownumber, identifier = "chooserow"))
-        return render_template("admindisplaytables.html", table = "Row Delete " + deleterownumber, familynames = db.session.query(FamilyNames).order_by(FamilyNames.id.asc()).all())
-    elif session["deletenumber"] == "4":
-        if identifier != "chooserow":
-            data = db.session.query(CityState).filter(CityState.id == identifier).first()
-            db.session.delete(data)
-            db.session.commit()
-            return redirect(url_for("deletetablerow", deleterownumber = deleterownumber, identifier = "chooserow"))
-        return render_template("admindisplaytables.html", table = "Row Delete " + deleterownumber, citystate = db.session.query(CityState).order_by(CityState.id.asc()).all())
+        return render_template("admindisplaytables.html", table = "Row Delete", tableid = deleterownumber, familynames = db.session.query(FamilyNames).order_by(FamilyNames.id.asc()).all())
     else:
         flash("No such table exists", "danger")
         return redirect(url_for("admindashboard"))
@@ -466,23 +622,65 @@ def deletetables(number):
     elif number == "3":
         db.session.query(FamilyNames).delete()
         db.session.commit()
-    elif number == "4":
-        db.session.query(CityState).delete()
-        db.session.commit()
     else:
         flash("No such table exists", "danger")
         return redirect(url_for("admindashboard"))
     return redirect(url_for("admindashboard"))
 
-@app.route("/admin/defaultcitystate")
+@app.route("/admin/relation", methods = ["GET", "POST"])
 @is_admin
-def citystate():
-    lst = [["Chennai", "Tamil Nadu"], ["Madurai", "Tamil Nadu"], ["Trichi", "Tamil Nadu"], ["Salem", "Tamil Nadu"], ["Thooththukkudi", "Tamil Nadu"]]
-    for one in lst:
-        data = CityState(one[0], one[1])
+def relation():
+    return render_template("adminrelation.html", relation = db.session.query(Relation).all())
+
+@app.route("/admin/relation/show/<relationname>", methods = ["GET", "POST"])
+def showrelations(relationname):
+    relation = db.session.query(Relation).filter(Relation.name == relationname).all()
+    return render_template("adminrelation.html", relation = relation)
+
+@app.route("/admin/relation/add", methods = ["GET", "POST"])
+@is_admin
+def addrelations():
+    if request.method == "POST":
+        name = request.form["name"]
+        if name == "Other":
+            name = request.form["personother"]
+        spouse = request.form["spouse"]
+        father = request.form["father"]
+        mother = request.form["mother"]
+        children = request.form["children"]
+        siblings = request.form["siblings"]
+        userid = db.session.query(FamilyDetails).filter(FamilyDetails.name == name).first().id
+        data = Relation(userid, name, spouse, father, mother, children, siblings)
         db.session.add(data)
         db.session.commit()
-    return redirect(url_for("home"))
+        return redirect(url_for("relation"))
+    return render_template("adminrelationadd.html", person = db.session.query(FamilyDetails.name).order_by(FamilyDetails.name).all())
+
+@app.route("/admin/relation/edit/<number>", methods = ["GET", "POST"])
+def editrelation(number):
+    if request.method == "POST":
+        name = request.form["name"]
+        spouse = request.form["spouse"]
+        father = request.form["father"]
+        mother = request.form["mother"]
+        children = request.form["children"]
+        siblings = request.form["siblings"]
+        first = db.session.query(Relation).filter(Relation.id == number).first()
+        if first.name != name:
+            first.name = name
+        if first.spouse != spouse:
+            first.spouse = spouse
+        if first.father != father:
+            first.father = father
+        if first.mother != mother:
+            first.mother = mother
+        if first.child != children:
+            first.child = children
+        if first.sibling != siblings:
+            first.sibling = siblings
+        db.session.commit()
+        return redirect(url_for("relation"))
+    return render_template("adminrelationedit.html", person = db.session.query(FamilyDetails.name).order_by(FamilyDetails.name).all(), relationdet = db.session.query(Relation).filter(Relation.id == number).first())
 
 @app.route("/admin/logout")
 @is_admin

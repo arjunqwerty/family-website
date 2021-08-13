@@ -83,11 +83,16 @@
 				<div class="row">
 					<div class="col-xs-25 col-sm-25 col-md-25 col-lg-25 col-xl-25" style="width: 100%;">
 						<label for="sorting">Filter by</label>
-						<select id="sorting" onchange="sortingOption(value)">
+						<select id="sorting" onchange="sortingOption(value, 'none')">
 							<option id="default" value="default">Remove Filter</option>
+							<option id="personname"value="Name">Name</option>
 							<option id="address" value="Address">City</option>
 							<option id="family" value="FamilyName">Family Name</option>
 						</select>
+					</div>
+					<div class="col-xs-25 col-sm-25 col-md-25 col-lg-25 col-xl-25" id="inputname" style="display: none;">
+						<label for="namevalue">Enter</label>
+						<input type="text" name="rowal" id="namevalue" style="height: 35px;">
 					</div>
 					<div class="col-xs-25 col-sm-25 col-md-25 col-lg-25 col-xl-25" id="selectaddress" style="display: none;">
 						<label for="valueinput">Select</label>
@@ -152,7 +157,7 @@
 						{% if person.name != "" %}
 							<p class="col-5">{{person.id}}</p>
 							<p class="col-9">{{person.salutation}} {{person.name}}</p>
-							<p class="col-15">{{person.housestreet}},<br>{{person.neighbourhood}},<br>{{person.city}} - {{person.pincode}}<br>{{person.state}}</p>
+							<p class="col-15">{{person.housestreet}},<br>{{person.neighbourhood}},<br>{{person.city}} - {{person.pincode}}<br>{{person.state}}, {{person.country}}</p>
 							<p class="col-9">{{person.phone}}</p>
 							<p class="col-8" id="date{{person.id}}">{{person.dateofbirth}}</p>
 							<script>
@@ -160,7 +165,7 @@
 								document.getElementById("date{{person.id}}").innerHTML = date[2] + "-" + date[1] + "-" + date[0];
 							</script>
 							<p class="col-9">{{person.familyname}}</p>
-							{% if session.admin or (person.salutation + person.name) == session.name and session.filter %}
+							{% if (person.salutation + person.name) == session.name and session.filter %}
 								<p class="col-5"><a class="btn btn-default" href="/details/edit">Edit</a></p>
 							{% else %}
 								<p class="col-5"></p>
@@ -180,7 +185,7 @@
 			if (x[3] == undefined) {
 				document.getElementById("default").text = "";
 			} else {
-				sortingOption(x[3]);
+				sortingOption(x[3], x[4]);
 			}
 			if ("{{session.sortby}}" == "asc") {
 				if ("{{session.sortid}}" == "default") {
@@ -200,36 +205,70 @@
 					document.getElementById("familynamesort").href = "/index/sorting/familyname/desc";
 				}
 			}
-			/*Add script so that the dob shows in indian format (dd-mm-yyyy)*/
-			function sortingOption(value) {
-				if (value == "Address") {
+			function sortingOption(value, rowvalue) {
+				if (value == "Name") {
+					document.getElementById("default").text = "Remove Filter";
+					document.getElementById("personname").selected = true;
+					document.getElementById("selectaddress").style.display = "none";
+					document.getElementById("selectfamily").style.display = "none";
+					document.getElementById("inputname").style.display = "block";
+					document.getElementById("formsubmitbutton").style.display = "block";
+					document.getElementById("namevalue").focus();
+					if (rowvalue != "none"){
+						count = (rowvalue.match(/%20/g) || []).length;
+						for (let j = 0; j < count; j++) {
+							rowvalue = rowvalue.replace("%20", " ");
+						}
+						document.getElementById("namevalue").value = rowvalue;
+					}
+				} else if (value == "Address") {
 					document.getElementById("default").text = "Remove Filter";
 					document.getElementById("address").selected = true;
+					document.getElementById("inputname").style.display = "none";
 					document.getElementById("selectfamily").style.display = "none";
 					document.getElementById("selectaddress").style.display = "block";
 					document.getElementById("formsubmitbutton").style.display = "block";
+					for (let i = 0; i < document.getElementById("selectaddress").children.item(1).children.length; i++) {
+						if (document.getElementById("selectaddress").children.item(1).children.item(i).value === rowvalue) {
+							document.getElementById("selectaddress").children.item(1).children.item(i).selected = true;
+						}
+					}
 				} else if (value == "FamilyName") {
 					document.getElementById("default").text = "Remove Filter";
 					document.getElementById("family").selected = true;
+					document.getElementById("inputname").style.display = "none";
 					document.getElementById("selectaddress").style.display = "none";
 					document.getElementById("selectfamily").style.display = "block";
 					document.getElementById("formsubmitbutton").style.display = "block";
+					for (let i = 0; i < document.getElementById("selectfamily").children.item(1).children.length; i++) {
+						if (document.getElementById("selectfamily").children.item(1).children.item(i).value === rowvalue) {
+							document.getElementById("selectfamily").children.item(1).children.item(i).selected = true;
+						}
+					}
 				} else {
 					document.getElementById("default").text = "";
 					document.getElementById("default").selected = true;
+					document.getElementById("inputname").style.display = "none";
 					document.getElementById("selectaddress").style.display = "none";
 					document.getElementById("selectfamily").style.display = "none";
 					document.getElementById("formsubmitbutton").style.display = "none";
 					if (location.pathname != "/index") {
-						location.pathname = "/index";
+						location.pathname = "/index/filter/default/default";
 					}
 				}
 			}
 			function filteringOption() {
 				if (document.getElementById("sorting").children.item(1).selected == true) {
+					var rowvalue = document.getElementById("namevalue").value;
+					if (rowvalue.length == 0) {
+						document.getElementById("formsubmitbutton").children.item(0).href = "/index";
+					} else {
+						document.getElementById("formsubmitbutton").children.item(0).href = "/index/filter/Name/" + rowvalue;
+					}
+				} else if (document.getElementById("sorting").children.item(2).selected == true) {
 					var rowvalue = document.getElementById("addressvalue").value;
 					document.getElementById("formsubmitbutton").children.item(0).href = "/index/filter/Address/" + rowvalue;
-				} else if (document.getElementById("sorting").children.item(2).selected == true) {
+				} else if (document.getElementById("sorting").children.item(3).selected == true) {
 					var rowvalue = document.getElementById("familyvalue").value;
 					document.getElementById("formsubmitbutton").children.item(0).href = "/index/filter/FamilyName/" + rowvalue;
 				}

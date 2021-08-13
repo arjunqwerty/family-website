@@ -70,7 +70,14 @@
                                     </div>
                                     <div class="form-group">
                                         <h4>Phone Number</h4>
-                                        <input type="tel" name="phone">
+                                        <div class="row" style="padding-left: 5%; padding-right: 5%;">
+                                            <select id="selectmainphone" name="phonecode" class="col-15" style="padding-right: 0px; padding-left: 0px; font-size: small;">
+                                                {% for phonecode in phonecodes %}
+                                                    <option value="{{phonecode[2]}}">{{phonecode[2]}} {{phonecode[1]}}</option>
+                                                {% endfor %}
+                                            </select>
+                                            <input type="tel" class="col-45" name="phone" pattern="[0-9]{[0-20]}" title="Enter only numbers">
+                                        </div>
                                     </div>
                                     <div class="form-group">
                                         <h4>Password</h4>
@@ -90,6 +97,7 @@
             </div>
         </div>
         <script>
+            document.getElementById("selectmainphone").options[102].selected = true;
             function changeRegister() {
                 document.getElementById("loginbox").style.display = "none";
                 document.getElementById("loginbox").children.item(0).children.item(1).children.item(0).children.item(1).value = "";

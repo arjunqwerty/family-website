@@ -12,9 +12,6 @@
 			.btnstretch {
 				width: 100%;
 			}
-			.btnstretch {
-				width: 100%;
-			}
 			html, body {
 				min-height: 100%;
 			}
@@ -38,6 +35,8 @@
 				width: 100%;
 				padding: 5px;
 				vertical-align: middle;
+				margin-top: 2px;
+				margin-bottom: 2px;
 			}
 			input {
 				width: 100%;
@@ -49,63 +48,133 @@
 			.btn-default {
 				border: 1px solid #000;
 			}
+			#addressrow div {
+				padding-right: 0px;
+			}
 		</style>
 	</head>
 	<body>
 		{% include "_navbar.html" %}
 		{% include "_messages.html" %}
-		{% if session.addrownumber == "1and2" %}
-		<form action="/register" method="POST">
-			<h1>Register Details</h1>
-			<div class="row">
-				<div class="form-group col-20">
-					<h4>User Name</h4>
-					<input type="text" name="name">
+		{% if session.editnumber == "1" %}
+			<form action="/admin/table/row/edit/1/{{registerdet.id}}" method="POST">
+				<h1>Register Details</h1>
+				<div class="row">
+					<div class="col-4">
+						<h4>ID</h4>
+						<p>{{registerdet.id}}</p>
+					</div>
+					<div class="form-group col-14">
+						<h4>User Name</h4>
+						<input type="text" name="username" value="{{registerdet.name}}">
+					</div>
+					<div class="form-group col-14">
+						<h4>Phone Number</h4>
+						<div class="row" style="padding-left: 5%; padding-right: 5%;" id="mainphone">
+							<select name="phonecode" class="col-15" style="padding-right: 0px; padding-left: 0px; font-size: small;">
+								{% for phonecode in phonecode %}
+									<option value="{{phonecode[2]}}">{{phonecode[2]}}</option>
+								{% endfor %}
+							</select>
+							<input type="tel" class="col-45" name="mainphone" value="" pattern="[0-9]{[0-20]}" title="Enter only numbers" id="mainphoneinput">
+						</div>
+					</div>
+					<div class="form-group col-14">
+						<h4>Password</h4>
+						<input type="text" name="password" value="{{registerdet.password}}">
+					</div>
+					<div class="form-group col-14">
+						<h4>Approval</h4>
+						<select name="approval">
+							<option value="Approved">Approved</option>
+							<option value="Waiting">Waiting</option>
+						</select>
+					</div>
 				</div>
-				<div class="form-group col-20">
-					<h4>Phone Number</h4>
-					<input type="tel" name="phone">
+				<div style="text-align: center;">
+					<button type="submit" class="btn btn-primary text-center" value="Submit">Submit</button>
 				</div>
-				<div class="form-group col-20">
-					<h4>Password</h4>
-					<input type="password" name="password">
-				</div>
+			</form>
+			<br>
+			<div class="text-center">
+				<a href="/admin/table/row/edit/1/chooserow" class="btn btn-default btnstretch">Back</a>
 			</div>
-			<h1>Family Details</h1>
-			<div class="row">
-				<div class="col-xs-5 col-sm-5 col-md-5 col-lg-15 col-xl-15"></div>
-				<div class="col-xs-50 col-sm-50 col-md-50 col-lg-30 col-xl-30">
-					<div class="form-group"><!--name-->
+			<script>
+				var phone = "{{registerdet.phone}}".split(" ");
+				var phonecode = document.getElementById("mainphone").children.item(0).children;
+				if (phone[0][0] === "+") {
+					for (let i = 0; i < phonecode.length; i++) {
+						if (phonecode.item(i).value === phone[0]) {
+							phonecode.item(i).selected = true;
+						}
+					}
+					document.getElementById("mainphone").children.item(1).value = phone[1];
+				} else {
+					document.getElementById("mainphone").children.item(1).value = phone;
+				}
+			</script>
+		{% endif %}
+
+		{% if session.editnumber == "2" %}
+			<form action="/admin/table/row/edit/2/{{familydet.id}}" method="POST">
+				<h1>Family Details</h1>
+				<div class="row">
+					<div class="form-group col-xs-60 col-sm-60 col-md-60 col-lg-15 col-xl-15"><!--name-->
 						<h4>Name :</h4>
-						<select name="salutation" style="width: 20%; margin-right: -4px;" required>
+						<select id="salute" name="salutation" style="width: 20%; margin-right: -4px;">
 							<option value="Mr. ">Mr.</option>
 							<option value="Mrs. ">Mrs.</option>
 							<option value="Master. ">Master.</option>
 							<option value="Ms. ">Ms.</option>
 							<option value="Dr. ">Dr.</option>
 						</select>
-						<input type="text" class="text" style="width: 80%;" name="name" value="" required>
+						<input type="text" class="text" style="width: 80%;" name="name" value="{{familydet.name}}">
 					</div>
-					<div class="form-group"><!--address-->
+					<div class="form-group col-xs-60 col-sm-60 col-md-60 col-lg-45 col-xl-45"><!--address-->
 						<h4>Address :</h4>
-						<input type="text" class="text" style="width: 50%; margin-right: -4px;" name="housest" placeholder="House num, Street" value="" required>
-						<input type="text" class="text" style="width: 50%; margin-right: -4px;" name="locality" placeholder="Locality" value="" required>
-						<input type="text" class="text" style="width: 50%; margin-right: -4px;" name="city" placeholder="City" value="" required>
-						<input type="text" class="text" style="width: 50%; margin-right: -4px;" name="state" placeholder="State" value="" required>
-						<input type="text" class="text" style="width: 50%; margin-right: -4px;" name="pincode" placeholder="Pincode" value="" required>
+						<div class="row" id="addressrow">
+							<div class="col-xs-60 col-sm-60 col-md-60 col-lg-10 col-xl-10">
+								<input type="text" class="text" style="width: 100%;" name="housest" value="{{familydet.housestreet}}">
+							</div>
+							<div class="col-xs-60 col-sm-60 col-md-60 col-lg-10 col-xl-10">
+								<input type="text" class="text" style="width: 100%;" name="locality" value="{{familydet.neighbourhood}}">
+							</div>
+							<div class="col-xs-60 col-sm-60 col-md-60 col-lg-10 col-xl-10">
+								<select id="selectcountry" name="country" onchange="showState()" style="margin-right: -4px;">
+									<option hidden>Country</option>
+									{% for country in country %}
+										<option value="{{country[1]}} | {{country[0]}}">{{country[1]}}</option>
+									{% endfor %}
+								</select>
+							</div>
+							<div class="col-xs-60 col-sm-60 col-md-60 col-lg-10 col-xl-10">
+								<select id="selectstate" name="state" onchange="showCity()" style="margin-right: -4px;">
+									<option hidden>State</option>
+									<option value="">Select Country</option>
+								</select>
+							</div>
+							<div class="col-xs-60 col-sm-60 col-md-60 col-lg-10 col-xl-10">
+								<select id="selectcity" name="city" style="margin-right: -4px;">
+									<option hidden>City</option>
+									<option value="">Select State</option>
+								</select>
+							</div>
+							<div class="col-xs-60 col-sm-60 col-md-60 col-lg-10 col-xl-10">
+								<input class="text" type="text" style="width: 100%;display: block;" name="pincode" value="{{familydet.pincode}}">
+							</div>
+						</div>
 					</div>
-					<div id="phone" class="form-group"><!--phone-->
+					<div id="phone" class="form-group col-xs-60 col-sm-60 col-md-60 col-lg-15 col-xl-15"><!--phone-->
 						<h4>Phone Number :</h4>
-						<input type="text" class="text" style="width: 50%;" name="phone" value="" readonly>
-						<a href="#addphonenum" class="btn btn-default" data-toggle="tab" onclick="showPhoneInput.call(this, event)">Add Phone Number</a>
+						<input type="text" class="text" style="display: none;" name="phone" value="{{familydet.phone}}" readonly>
 					</div>
-					<div id="datetime" class="form-group">
+					<div id="datetime" class="form-group col-xs-60 col-sm-60 col-md-60 col-lg-15 col-xl-15">
 						<h4>Date of Birth :</h4>
-						<input type="date" class="text" name="dob" value="" required>
+						<input type="date" class="text" name="dob" value="{{familydet.dateofbirth}}">
 					</div>
-					<div class="form-group"><!--familyname-->
+					<div class="form-group col-xs-60 col-sm-60 col-md-60 col-lg-15 col-xl-15"><!--familyname-->
 						<h4>Family Name :</h4>
-						<select name="familyname" onchange="showOtherInput.call(this, event)" required>
+						<select id="selectfamily" name="familyname" onchange="showOtherInput.call(this, event)" value="{{familydet.family}}">
 							<option value=""></option>
 							{% for familyname in familynames %}
 								<option value="{{familyname.name}}">{{familyname.name}}</option>
@@ -113,66 +182,164 @@
 							<option value="other">Other</option>
 						</select>
 					</div>
-					<div id="otherinput" class="form-group" style="display: none;">
-						<input class="text" type="text" name="otherfamilyname" value="">
+					<div id="otherinput" class="form-group col-xs-60 col-sm-60 col-md-60 col-lg-15 col-xl-15" style="display: none;">
 						<h6>Enter Family Name</h6>
+						<input class="text" type="text" name="otherfamilyname">
 					</div>
 				</div>
-				<div class="col-xs-5 col-sm-5 col-md-5 col-lg-15 col-xl-15"></div>
+				<div style="text-align: center;">
+					<button type="submit" class="btn btn-primary text-center" onclick="phoneNumberCollect()" value="Submit">Submit</button>
+				</div>
+			</form>
+			<br>
+			<div class="text-center">
+				<a href="/admin/table/row/edit/2/chooserow" class="btn btn-default btnstretch">Back</a>
 			</div>
-			<div style="text-align: center;">
-				<button type="submit" class="btn btn-primary text-center" onclick="phoneNumberCollect()" value="Submit">Submit</button>
-			</div>
-		</form>
+			<script>
+				var selectsalute = document.getElementById("salute");
+				for (let i = 0; i < selectsalute.length; i++) {
+					if (selectsalute.options[i].value == "{{familydet.salutation}}") {
+						selectsalute.options[i].selected = true;
+					}
+				}
+				var list = document.getElementById("phone").children.item(1).value.split(", ");
+				for (let index = 0; index < (list.length); index++) {
+					var x = document.createElement("INPUT");
+					x.setAttribute("class", "text");
+					x.setAttribute("type", "text");
+					x.setAttribute("value", list[index]);
+					x.setAttribute("style", "width: 50%;")
+					document.getElementById("phone").appendChild(x);
+				}
+				var selectedcountry = document.getElementById("selectcountry");
+				for (let i = 0; i < selectedcountry.length; i++) {
+					if (selectedcountry.options[i].text == "{{familydet.country}}"){
+						selectedcountry.options[i].selected = true;
+						showState();
+					}
+				}
+				var selectedstate = document.getElementById("selectstate");
+				for (let i = 0; i < selectedstate.length; i++) {
+					if (selectedstate.options[i].text == "{{familydet.state}}") {
+						selectedstate.options[i].selected = true;
+						showCity();
+					}
+				}
+				var selectedcity = document.getElementById("selectcity");
+				for (let i = 0; i < selectedcity.length; i++) {
+					if (selectedcity.options[i].text == "{{familydet.city}}") {
+						selectedcity.options[i].selected = true;
+					}
+				}
+				var selectedfamily = document.getElementById("selectfamily");
+				for (let i = 0; i < selectedfamily.length; i++) {
+					if (selectedfamily.options[i].text == "{{familydet.familyname}}") {
+						selectedfamily.options[i].selected = true;
+					}
+				}
+				function eraseoptions(elementid, check) {
+					var options = document.getElementById(elementid);
+					i = 2;
+					while (i < options.length) {
+						var num =  options.length
+						options.removeChild(options.lastElementChild);
+					}
+					if (elementid === "selectcity" && check ==="1") {
+						var a = document.createElement("option");
+						a.setAttribute("value", "");
+						a.innerHTML = "Select State";
+						options.appendChild(a);
+						}
+					}
+				function showState() {
+					eraseoptions("selectstate", "2");
+					eraseoptions("selectcity", "1");
+					thist = document.getElementById("selectcountry");
+					var country = thist.options[thist.selectedIndex].value;
+					var countryid = country.split(" | ")[1];
+					var states = "{{states}}".split("[");
+					for (let i = 2; i < states.length; i++) {
+						var coloumns = states[i].replace("],",'').split(",");
+						if (coloumns[0] == countryid) {
+							var statename = coloumns[2].replace("&#39;","");
+							var statename = statename.replace("&#39;","");
+							var statevalue = [statename, "|", coloumns[1]];
+							var x = document.createElement("option");
+							x.setAttribute("value", statevalue.join(""));
+							var z = document.createTextNode(statename);
+							x.appendChild(z);
+							document.getElementById("selectstate").appendChild(x);
+						}
+					}
+				}
+				function showCity() {
+					eraseoptions("selectcity", "2");
+					thist = document.getElementById("selectstate");
+					var state = thist.options[thist.selectedIndex].value;
+					var stateid = state.split(" | ")[1];
+					var cities = "{{cities}}".split("[");
+					for (let i = 2; i < cities.length; i++) {
+						var coloumns = cities[i].replace("],",'').split(",");
+						if (coloumns[0] == stateid) {
+							var cityname = coloumns[2].replace("&#39;","");
+							var cityname = cityname.replace("&#39;","");
+							var x = document.createElement("option");
+							x.setAttribute("value", cityname);
+							var z = document.createTextNode(cityname);
+							x.appendChild(z);
+							document.getElementById("selectcity").appendChild(x);
+						}
+					}
+				}
+				function phoneNumberCollect() {
+					var phoneParent = document.getElementById("phone");
+					var last = phoneParent.children.length;
+					var combinedphone = phoneParent.children.item(2).value;
+					for (let index = 3; index < last; index++) {
+						if (phoneParent.children.item(index).value != "") {
+							combinedphone = combinedphone + ", " + phoneParent.children.item(index).value;
+						}
+					}
+					document.getElementById("phone").children.item(1).value = combinedphone;
+				}
+				function showOtherInput(event) {
+					if (this.options[this.selectedIndex].text == "Other") {
+						document.getElementById("otherinput").style.display = "block";
+					} else {
+						document.getElementById("otherinput").style.display = "none";
+					}
+				}
+			</script>
 		{% endif %}
-
-		{% if session.addrownumber == "3" %}
-			<h1>Family Names Details</h1>
-			<table class="table table-striped">
-				<tr>
-					<th>ID</th>
-					<th>Name</th>
-				</tr>
-				<tr>
-					<td></td>
-					<td>
-						<input type="text">
-					</td>
-				</tr>
-			</table>
+		
+		{% if session.editnumber == "3" %}
+			<form action="/admin/table/row/edit/3/{{familynames.id}}">
+				<h1>Family Names Details</h1>
+				<table class="table table-striped">
+					<tr>
+						<th>ID</th>
+						<th>Name</th>
+					</tr>
+					<tr>
+						<td>
+							<p>{{familynames.id}}</p>
+						</td>
+						<td>
+							<input type="text" value="{{familynames.name}}">
+						</td>
+					</tr>
+				</table>
+				<div style="text-align: center;">
+					<button type="submit" class="btn btn-primary text-center" value="Submit">Submit</button>
+				</div>
+			</form>
+			<br>
+			<div class="text-center">
+				<a href="/admin/table/row/edit/3/chooserow" class="btn btn-default btnstretch">Back</a>
+			</div>
 		{% endif %}
 
 		<br>
-		<div class="text-center">
-			<a href="/admin/dashboard" class="btn btn-default btnstretch">Back</a>
-		</div>
-		<br>
-		<script>
-			function showOtherInput(event) {
-				if (this.options[this.selectedIndex].text == "Other") {
-					document.getElementById("otherinput").style.display = "block";
-				} else {
-					document.getElementById("otherinput").style.display = "none";
-				}
-			}
-			function showPhoneInput(event) {
-				var x = document.createElement("INPUT");
-				x.setAttribute("type", "tel");
-				x.setAttribute("pattern", "[+]{1}[0-9]/[-]{[1-5} [0-9]{[10-20]}");
-				x.setAttribute("style", "width: 50%;")
-				x.setAttribute("required", "");
-				document.getElementById("phone").appendChild(x);
-			}
-			function phoneNumberCollect() {
-				var phoneParent = document.getElementById("phone");
-				var last = phoneParent.children.length;
-				var combinedphone = phoneParent.children.item(1).value;
-				for (let index = 3; index < last; index++) {
-					combinedphone = combinedphone + ", " + phoneParent.children.item(index).value;
-				}
-				document.getElementById("phone").children.item(1).value = combinedphone;
-			}
-		</script>
 		<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>

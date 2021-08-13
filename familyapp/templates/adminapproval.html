@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>TKR Relatives</title>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+		<style>
+			.btnstretch {
+				width: 100%;
+			}
+			.btn-default {
+				border: 1px solid #000;
+			}
+			.sortbutton {
+				height: 100%;
+			}
+		</style>
+    </head>
+    <body>
+        {% include "_navbar.html" %}
+		{% include "_messages.html" %}
+        <div class="text-center">
+            <h1>TK Renganathan Relatives</h1>
+        </div>
+		<table class="table table-striped">
+			<tr>
+                <th></th>
+				<th>S No</th>
+				<th>Name</th>
+				<th>Phone</th>
+				<th></th>
+				<th></th>
+			</tr>
+			{% for person in data %}
+				<tr>
+                    <td></td>
+					<td>{{person.id}}</td>
+					<td>{{person.name}}</td>
+					<td>{{person.phone}}</td>
+                    <td class="text-center"><a href="/admin/approval/approved/{{person.id}}" class="btn btn-success btnstretch">Approve</a></td>
+                    <td class="text-center"><a href="/admin/approval/delete/{{person.id}}" class="btn btn-danger btnstretch">Delete</a></td>
+				</tr>
+			{% endfor %}
+		</table>
+		<div class="text-center">
+			<a href="/admin/dashboard" class="btn btn-default btnstretch">Back</a>
+		</div>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    </body>
+</html>
