@@ -1,8 +1,0 @@
-Index:
-    - Take coloumn to filter, ask the value as dropdown with the city/familyname values(index.html)#####
-    - Filtering the rows by given value(routes.py)#####
-Add details:
-    - Add salutations(adddetails.html, routes.py)#####
-    - Adding multiple phone numbers(adddetails.html)#####
-    - Add relation to ppl by selecting already registered people to the resp relation(adddetails.html)
-    - Add a table for this with the relations as cols, ppl as rows (model.py)
