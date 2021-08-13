@@ -384,7 +384,7 @@ def adminapproval(stat,idapprove):
         return render_template("adminapproval.html", data = db.session.query(RegisterDetails).filter(RegisterDetails.approval == "").all())
     elif stat == "approved":
         profile = db.session.query(RegisterDetails).filter(RegisterDetails.id == idapprove).first()
-        profile.approval = "approved"
+        profile.approval = "Approved"
         db.session.commit()
         return redirect(url_for("adminapproval", stat = "none", idapprove = "none"))
     else:
