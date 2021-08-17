@@ -2,6 +2,8 @@ from flask import render_template, flash, redirect, url_for, session, request
 from functools import wraps
 from sqlalchemy import asc, desc, func
 import pickle
+import os
+import fpdf
 
 from familyapp import app, db
 from familyapp.model import RegisterDetails, FamilyDetails, FamilyNames, Relation
@@ -37,6 +39,10 @@ def getbinarydat(filename):
         f.close()
     return lst
 
+@app.route("/maintenance")
+def maintenance():
+    return render_template("dummy2.html")
+
 @app.route("/register", methods = ["GET", "POST"])
 def register():
     if request.method == "POST":
@@ -57,6 +63,7 @@ def register():
 @app.route("/", methods = ["GET", "POST"])
 @app.route("/login", methods = ["GET", "POST"])
 def home():
+    session["maintenance"] = "maintain" #maintain (or) production
     if request.method == "POST":
         peoplename = request.form["name"]
         password = request.form["password"]
@@ -108,6 +115,8 @@ def index():
     else:
         session["filter"] = True
         session["name"] = person.salutation + person.name
+        session["filtercoloumn"] = ""
+        session["filterrowval"] = ""
         sorting = session["sortid"]
         addressdata = db.session.query(FamilyDetails).distinct(FamilyDetails.city).all()
         familynames = db.session.query(FamilyNames).all()
@@ -365,6 +374,52 @@ def editdetails():
     lstcity = getbinarydat("city.dat")
     lstphone = getbinarydat("phonecode.dat")
     return render_template("editdetails.html", profile = db.session.query(FamilyDetails).filter(FamilyDetails.id == identifier).first(), country = lstcount, states = lststate, cities = lstcity, phonecode = lstphone)
+
+@app.route("/printpage", methods = ["GET", "POST"])
+def printpdf():
+    if request.method == "POST":
+        filename = request.form["filename"]
+        device = request.form["deviceinfor"]
+        chosen = session["filterrowval"]
+        if session["filtercoloumn"] == "Name":
+            data = db.session.query(FamilyDetails.id, FamilyDetails.salutation, FamilyDetails.name, FamilyDetails.dateofbirth, FamilyDetails.housestreet, FamilyDetails.neighbourhood, FamilyDetails.city, FamilyDetails.state, FamilyDetails.country, FamilyDetails.pincode, FamilyDetails.phone, FamilyDetails.familyname).filter(func.lower(FamilyDetails.name).startswith(chosen.lower())).order_by(asc(FamilyDetails.id)).all()
+        elif session["filtercoloumn"] == "Address":
+            data = db.session.query(FamilyDetails.id, FamilyDetails.salutation, FamilyDetails.name, FamilyDetails.dateofbirth, FamilyDetails.housestreet, FamilyDetails.neighbourhood, FamilyDetails.city, FamilyDetails.state, FamilyDetails.country, FamilyDetails.pincode, FamilyDetails.phone, FamilyDetails.familyname).filter(FamilyDetails.city == chosen).order_by(asc(FamilyDetails.id)).all()
+        elif session["filtercoloumn"] == "FamilyName":
+            data = db.session.query(FamilyDetails.id, FamilyDetails.salutation, FamilyDetails.name, FamilyDetails.dateofbirth, FamilyDetails.housestreet, FamilyDetails.neighbourhood, FamilyDetails.city, FamilyDetails.state, FamilyDetails.country, FamilyDetails.pincode, FamilyDetails.phone, FamilyDetails.familyname).filter(FamilyDetails.familyname == chosen).order_by(asc(FamilyDetails.id)).all()
+        else:
+            data = db.session.query(FamilyDetails.id, FamilyDetails.salutation, FamilyDetails.name, FamilyDetails.dateofbirth, FamilyDetails.housestreet, FamilyDetails.neighbourhood, FamilyDetails.city, FamilyDetails.state, FamilyDetails.country, FamilyDetails.pincode, FamilyDetails.phone, FamilyDetails.familyname).order_by(asc(FamilyDetails.id)).all()
+        pdf = fpdf.FPDF()
+        pdf.add_page()
+        pdf.set_font("Arial", size = 10)
+        linh = 10
+        pdf.line(10, linh, 200 ,linh)
+        for k in data:
+            name = "\t\t" + str(k[1]) + str(k[2])
+            housestreet = "\t\t" + str(k[4]) + ","
+            landmark = "\t\t" + str(k[5]) + ","
+            citystatcounpin = "\t\t" + str(k[6]) + ", " + str(k[7]) + ", " + str(k[8]) + " - " + str(k[9])
+            phone = "Phone: " + str(k[10])
+            familyname = "Family: " + str(k[11]) + "\t\t"
+            pdf.cell(w = 0, h = 5, txt = "", border = 0, ln = 1)
+            pdf.cell(w = 75, h = 5, txt = name, border = 0, ln = 0)
+            pdf.cell(w = 10, h = 5, txt = phone, border = 0, ln = 0)
+            pdf.cell(w = 0, h = 5, txt = familyname, border = 0, ln = 1, align = "R")
+            pdf.cell(w = 20, h = 5, txt = housestreet, border = 0, ln = 1)
+            pdf.cell(w = 20, h = 5, txt = landmark, border = 0, ln = 1)
+            pdf.cell(w = 20, h = 5, txt = citystatcounpin, border = 0, ln = 1)
+            pdf.cell(w = 0, h = 5, txt = "", border = 0, ln = 1)
+            linh += 30
+            pdf.line(10, linh, 200 ,linh)
+        pdf.line(10, 10, 10, linh)
+        pdf.line(200, 10, 200, linh)
+        if device == "phone":
+            defaultlocation = "file:///sdcard/Download/"
+        else:
+            defaultlocation = os.path.join(os.getenv('USERPROFILE'), 'Downloads') + "\\"
+        pdf.output(name = defaultlocation + filename+ ".pdf", dest = "F")
+        #pdf.output(name = filename+ ".pdf", dest = "F")
+        return redirect(url_for("indexfiltering", coloumn = session["filtercoloumn"], rowval = session["filterrowval"]))
 
 @app.route("/logout")
 @is_logged_in

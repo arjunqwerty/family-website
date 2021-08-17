@@ -65,6 +65,30 @@
 			h6 {
 				font-weight: bolder;
 			}
+			#pdfname {
+				position: fixed; /* Sit on top of the page content */
+				display: none; /* Hidden by default */
+				width: 100%; /* Full width (cover the whole page) */
+				height: 100%; /* Full height (cover the whole page) */
+				top: 0;
+				left: 0;
+				right: 0;
+				bottom: 0;
+				background-color: rgba(0,0,0,0.5); /* Black background with opacity */
+				z-index: 2; /* Specify a stack order in case you're using a different order for other elements */
+				cursor: pointer; /* Add a pointer on hover */
+			}
+			#pdfform {
+				position: absolute;
+				width: 400px;
+				padding: 20px;
+				top: 50%;
+				left: 50%;
+				background-color: honeydew;
+				border-radius: 25px;
+				transform: translate(-50%,-50%);
+				-ms-transform: translate(-50%,-50%);
+			}
 		</style>
     </head>
     <body>
@@ -79,7 +103,7 @@
 			<div class="col-xs-60 col-sm-60 col-md-60 col-lg-30 col-xl-30">
 				<h2 style="transform: translateX(2%);">Welcome {{session.name}}</h2>
 			</div>
-			<div class="col-xs-60 col-sm-60 col-md-60 col-lg-30 col-xl-30">
+			<div class="col-xs-60 col-sm-60 col-md-60 col-lg-30 col-xl-30"><!--Filter-->
 				<div class="row">
 					<div class="col-xs-25 col-sm-25 col-md-25 col-lg-25 col-xl-25" style="width: 100%;">
 						<label for="sorting">Filter by</label>
@@ -119,7 +143,7 @@
 		<div style="width: 100%;">
 			<div class="row" style="background-color: lightsalmon;">
 				<div class="col-1"></div>
-				<div class="col-58 row rowheading" style="padding-top: 10px; padding-bottom: 10px;">
+				<div class="col-58 row rowheading" style="padding-top: 10px; padding-bottom: 10px;"><!--Sorting-->
 					<div class="col-5">
 						<h6>S.No</h6>
 						<a class="btn sortbutton" href="/index/sorting/default/asc" id="snosort">&darr;</a>
@@ -177,8 +201,26 @@
 				<hr style="margin: 0px; padding: 0px;">
 			{% endfor %}
 		</div>
+		<div align="right">
+			<a href="#showpdfname" data-toggle="tab" onclick="showPdfName()" class="btn btn-warning">Print Page</a><!--Show enter name-->
+		</div>
+		<div id="pdfname" style="display: none;">
+			<form action="/printpage" method="POST" id="pdfform">
+				<input type="hidden" name="deviceinfor" id="deviceinfo">
+				<div class="form-group">
+					<h4>Enter File Name</h4>
+					<input type="text" name="filename" style="width: 100%;">
+				</div>
+				<div class="form-group text-center">
+					<button type="submit" class="btn btn-success" onclick="detectDevice()" value="Submit">Submit</button>
+				</div>
+				<div class="text-center">
+					<a class="btn btn-default" onclick="hidePdfName()">Cancel</a>
+				</div>
+			</form>
+		</div>
 		<script>
-			if (screen.width < "768") {
+			if (navigator.userAgent.match(/Android/i) || navigator.userAgent.match(/webOS/i) || navigator.userAgent.match(/iPhone/i) || navigator.userAgent.match(/iPad/i) || navigator.userAgent.match(/iPod/i) || navigator.userAgent.match(/BlackBerry/i) || navigator.userAgent.match(/Windows Phone/i)) {
 				alert("Please turn your device to the side to view the table clearly");
 			}
 			var x = location.pathname.split("/");
@@ -272,6 +314,19 @@
 					var rowvalue = document.getElementById("familyvalue").value;
 					document.getElementById("formsubmitbutton").children.item(0).href = "/index/filter/FamilyName/" + rowvalue;
 				}
+			}
+			function showPdfName() {
+				document.getElementById("pdfname").style.display = "block";
+			}
+			function detectDevice() {
+				if(navigator.userAgent.match(/Android/i) || navigator.userAgent.match(/webOS/i) || navigator.userAgent.match(/iPhone/i) || navigator.userAgent.match(/iPad/i) || navigator.userAgent.match(/iPod/i) || navigator.userAgent.match(/BlackBerry/i) || navigator.userAgent.match(/Windows Phone/i)) {
+					document.getElementById("deviceinfo").value = "phone";
+				} else {
+					document.getElementById("deviceinfo").value = "notphone"
+				}
+			}
+			function hidePdfName() {
+				document.getElementById("pdfname").style.display = "none";
 			}
 		</script>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
