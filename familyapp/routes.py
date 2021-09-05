@@ -2,8 +2,6 @@ from flask import render_template, flash, redirect, url_for, session, request
 from functools import wraps
 from sqlalchemy import asc, desc, func
 import pickle
-import os
-import fpdf
 
 from familyapp import app, db
 from familyapp.model import RegisterDetails, FamilyDetails, FamilyNames, Relation
@@ -39,9 +37,37 @@ def getbinarydat(filename):
         f.close()
     return lst
 
+@app.route("/sitemap")
+def sitemap():
+    # Route to dynamically generate a sitemap of your website/application. lastmod and priority tags omitted on static pages. lastmod included on dynamic content such as blog posts.
+    from flask import make_response, request, render_template
+    from urllib.parse import urlparse
+    host_components = urlparse(request.host_url)
+    host_base = host_components.scheme + "://" + host_components.netloc
+    # Static routes with static content
+    urlstatic = []
+    for rule in app.url_map.iter_rules():
+        if not str(rule).startswith("/admin") and not str(rule).startswith("/user"):
+            urlstatic.append(f"{host_base}{str(rule)}")
+    urlstatic.sort()
+    xml_sitemap = render_template("sitemap.xml", urlstatic = urlstatic, host_base = host_base)
+    response = make_response(xml_sitemap)
+    response.headers["Content-Type"] = "application/xml"
+    return response
+    # Dynamic routes with dynamic content
+    '''try:
+        dynamic_urls = list()
+        blog_posts = Post.objects(published = True)
+        for post in blog_posts:
+            url = {"loc": f"{host_base}/blog/{post.category.name}/{post.url}", "lastmod": post.date_published.strftime("%Y-%m-%dT%H:%M:%SZ")}
+            dynamic_urls.append(url)
+        xml_sitemap = render_template("sitemap.xml", urlstatic = urlstatic, dynamic_urls = dynamic_urls, host_base = host_base)
+    except:
+        xml_sitemap = render_template("sitemap.xml", urlstatic = urlstatic, host_base = host_base)'''
+
 @app.route("/maintenance")
 def maintenance():
-    return render_template("dummy2.html")
+    return render_template("maintenance.html")
 
 @app.route("/register", methods = ["GET", "POST"])
 def register():
@@ -115,8 +141,8 @@ def index():
     else:
         session["filter"] = True
         session["name"] = person.salutation + person.name
-        session["filtercoloumn"] = ""
-        session["filterrowval"] = ""
+        session["filtercoloumn"] = "default"
+        session["filterrowval"] = "default"
         sorting = session["sortid"]
         addressdata = db.session.query(FamilyDetails).distinct(FamilyDetails.city).all()
         familynames = db.session.query(FamilyNames).all()
@@ -377,49 +403,17 @@ def editdetails():
 
 @app.route("/printpage", methods = ["GET", "POST"])
 def printpdf():
-    if request.method == "POST":
-        filename = request.form["filename"]
-        device = request.form["deviceinfor"]
-        chosen = session["filterrowval"]
-        if session["filtercoloumn"] == "Name":
-            data = db.session.query(FamilyDetails.id, FamilyDetails.salutation, FamilyDetails.name, FamilyDetails.dateofbirth, FamilyDetails.housestreet, FamilyDetails.neighbourhood, FamilyDetails.city, FamilyDetails.state, FamilyDetails.country, FamilyDetails.pincode, FamilyDetails.phone, FamilyDetails.familyname).filter(func.lower(FamilyDetails.name).startswith(chosen.lower())).order_by(asc(FamilyDetails.id)).all()
-        elif session["filtercoloumn"] == "Address":
-            data = db.session.query(FamilyDetails.id, FamilyDetails.salutation, FamilyDetails.name, FamilyDetails.dateofbirth, FamilyDetails.housestreet, FamilyDetails.neighbourhood, FamilyDetails.city, FamilyDetails.state, FamilyDetails.country, FamilyDetails.pincode, FamilyDetails.phone, FamilyDetails.familyname).filter(FamilyDetails.city == chosen).order_by(asc(FamilyDetails.id)).all()
-        elif session["filtercoloumn"] == "FamilyName":
-            data = db.session.query(FamilyDetails.id, FamilyDetails.salutation, FamilyDetails.name, FamilyDetails.dateofbirth, FamilyDetails.housestreet, FamilyDetails.neighbourhood, FamilyDetails.city, FamilyDetails.state, FamilyDetails.country, FamilyDetails.pincode, FamilyDetails.phone, FamilyDetails.familyname).filter(FamilyDetails.familyname == chosen).order_by(asc(FamilyDetails.id)).all()
-        else:
-            data = db.session.query(FamilyDetails.id, FamilyDetails.salutation, FamilyDetails.name, FamilyDetails.dateofbirth, FamilyDetails.housestreet, FamilyDetails.neighbourhood, FamilyDetails.city, FamilyDetails.state, FamilyDetails.country, FamilyDetails.pincode, FamilyDetails.phone, FamilyDetails.familyname).order_by(asc(FamilyDetails.id)).all()
-        pdf = fpdf.FPDF()
-        pdf.add_page()
-        pdf.set_font("Arial", size = 10)
-        linh = 10
-        pdf.line(10, linh, 200 ,linh)
-        for k in data:
-            name = "\t\t" + str(k[1]) + str(k[2])
-            housestreet = "\t\t" + str(k[4]) + ","
-            landmark = "\t\t" + str(k[5]) + ","
-            citystatcounpin = "\t\t" + str(k[6]) + ", " + str(k[7]) + ", " + str(k[8]) + " - " + str(k[9])
-            phone = "Phone: " + str(k[10])
-            familyname = "Family: " + str(k[11]) + "\t\t"
-            pdf.cell(w = 0, h = 5, txt = "", border = 0, ln = 1)
-            pdf.cell(w = 75, h = 5, txt = name, border = 0, ln = 0)
-            pdf.cell(w = 10, h = 5, txt = phone, border = 0, ln = 0)
-            pdf.cell(w = 0, h = 5, txt = familyname, border = 0, ln = 1, align = "R")
-            pdf.cell(w = 20, h = 5, txt = housestreet, border = 0, ln = 1)
-            pdf.cell(w = 20, h = 5, txt = landmark, border = 0, ln = 1)
-            pdf.cell(w = 20, h = 5, txt = citystatcounpin, border = 0, ln = 1)
-            pdf.cell(w = 0, h = 5, txt = "", border = 0, ln = 1)
-            linh += 30
-            pdf.line(10, linh, 200 ,linh)
-        pdf.line(10, 10, 10, linh)
-        pdf.line(200, 10, 200, linh)
-        if device == "phone":
-            defaultlocation = "file:///sdcard/Download/"
-        else:
-            defaultlocation = os.path.join(os.getenv('USERPROFILE'), 'Downloads') + "\\"
-        pdf.output(name = defaultlocation + filename+ ".pdf", dest = "F")
-        #pdf.output(name = filename+ ".pdf", dest = "F")
-        return redirect(url_for("indexfiltering", coloumn = session["filtercoloumn"], rowval = session["filterrowval"]))
+    coloumn = session["filtercoloumn"]
+    rowval = session["filterrowval"]
+    if coloumn == "Name":
+        details = db.session.query(FamilyDetails).filter(func.lower(FamilyDetails.name).startswith(rowval.lower())).order_by(asc(FamilyDetails.name)).all()
+    elif coloumn == "Address":
+        details = db.session.query(FamilyDetails).filter(FamilyDetails.city == rowval).order_by(asc(FamilyDetails.name)).all()
+    elif coloumn == "FamilyName":
+        details = db.session.query(FamilyDetails).filter(FamilyDetails.familyname == rowval).order_by(asc(FamilyDetails.name)).all()
+    else:
+        details = db.session.query(FamilyDetails).order_by(asc(FamilyDetails.name)).all()
+    return render_template("printpage.html", data = details)
 
 @app.route("/logout")
 @is_logged_in

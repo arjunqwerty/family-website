@@ -6,7 +6,8 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>TKR Relatives</title>
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
-        <link rel="stylesheet" href="/static/sixtyfoldcoloum.css">
+        <link rel="stylesheet" href="/static/css/sixtyfoldcoloum.css">
+        <link rel="stylesheet" href="/static/css/animate.css">
         <style>
             html, body {
                 max-height: 100%;
@@ -60,7 +61,7 @@
                             </div>
                             <a href="#register" data-toggle="tab" onclick="changeRegister()">Register</a>
                         </div>
-                        <div id="registerbox" class="col-xs-40 col-sm-40 col-md-40 col-lg-60 col-xl-60" style="padding: 5%; background-color: lightgray; display: none;">
+                        <div id="registerbox" class="col-xs-40 col-sm-40 col-md-40 col-lg-60 col-xl-60 wow" style="padding: 5%; background-color: lightgray; display: none;">
                             <div style="background-color: lavender; padding: 5%">
                                 <h2>Register</h2>
                                 <form action="/register" method="POST">
@@ -96,30 +97,21 @@
                 <div class="col-xs-5 col-sm-5 col-md-5 col-lg-5 col-xl-5"></div>
             </div>
         </div>
+        <script src="/static/js/login.js"></script>
         <script>
-            if ("{{session.maintenance}}" != "production") {
-                if (navigator.productSub != "20030107" || navigator.userAgent != "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36") {
+            if ("{{session.maintenance}}" != "maintain") {
+                if (navigator.productSub != "20030107" || navigator.userAgent != "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.159 Safari/537.36") {
                     location.pathname = "/maintenance";
                 }
             }
             document.getElementById("selectmainphone").options[102].selected = true;
-            function changeRegister() {
-                document.getElementById("loginbox").style.display = "none";
-                document.getElementById("loginbox").children.item(0).children.item(1).children.item(0).children.item(1).value = "";
-                document.getElementById("loginbox").children.item(0).children.item(1).children.item(1).children.item(1).value = "";
-                document.getElementById("registerbox").style.display = "initial";
-            }
-            function changeLogin() {
-                document.getElementById("registerbox").style.display = "none";
-                document.getElementById("registerbox").children.item(0).children.item(1).children.item(0).children.item(1).value = "";
-                document.getElementById("registerbox").children.item(0).children.item(1).children.item(1).children.item(1).value = "";
-                document.getElementById("registerbox").children.item(0).children.item(1).children.item(2).children.item(1).value = "";
-                document.getElementById("loginbox").style.display = "initial";
-            }
         </script>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
         <script src="https://code.jquery.com/jquery-15.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+        <script src="/static/js/jquery.backstretch.min.js"></script>
+        <script src="/static/js/scripts.js"></script>
+        <script src="/static/js/wow.min.js"></script>
     </body>
 </html>

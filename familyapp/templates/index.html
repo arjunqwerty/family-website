@@ -6,7 +6,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>TKR Relatives</title>
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
-        <link rel="stylesheet" href="/static/sixtyfoldcoloum.css">
+        <link rel="stylesheet" href="/static/css/sixtyfoldcoloum.css">
 		<style>
 			.btnstretch {
 				width: 100%;
@@ -65,37 +65,15 @@
 			h6 {
 				font-weight: bolder;
 			}
-			#pdfname {
-				position: fixed; /* Sit on top of the page content */
-				display: none; /* Hidden by default */
-				width: 100%; /* Full width (cover the whole page) */
-				height: 100%; /* Full height (cover the whole page) */
-				top: 0;
-				left: 0;
-				right: 0;
-				bottom: 0;
-				background-color: rgba(0,0,0,0.5); /* Black background with opacity */
-				z-index: 2; /* Specify a stack order in case you're using a different order for other elements */
-				cursor: pointer; /* Add a pointer on hover */
-			}
-			#pdfform {
-				position: absolute;
-				width: 400px;
-				padding: 20px;
-				top: 50%;
-				left: 50%;
-				background-color: honeydew;
-				border-radius: 25px;
-				transform: translate(-50%,-50%);
-				-ms-transform: translate(-50%,-50%);
-			}
 		</style>
     </head>
     <body>
         {% include "_navbar.html" %}
 		{% include "_messages.html" %}
         <div class="row">
-			<p class="col-15"></p>
+			<div class="col-15" style="margin-top: 10px;" align="center">
+				<a href="/printpage">Print This Page</a>
+			</div>
             <h1 class="col-30 text-center">TK Renganathan Relatives</h1>
 			<p class="col-15"></p>
         </div>
@@ -107,7 +85,7 @@
 				<div class="row">
 					<div class="col-xs-25 col-sm-25 col-md-25 col-lg-25 col-xl-25" style="width: 100%;">
 						<label for="sorting">Filter by</label>
-						<select id="sorting" onchange="sortingOption(value, 'none')">
+						<select id="sorting" onchange="filterSelection(value, 'none')">
 							<option id="default" value="default">Remove Filter</option>
 							<option id="personname"value="Name">Name</option>
 							<option id="address" value="Address">City</option>
@@ -144,31 +122,31 @@
 			<div class="row" style="background-color: lightsalmon;">
 				<div class="col-1"></div>
 				<div class="col-58 row rowheading" style="padding-top: 10px; padding-bottom: 10px;"><!--Sorting-->
-					<div class="col-5">
+					<div class="col-3">
 						<h6>S.No</h6>
 						<a class="btn sortbutton" href="/index/sorting/default/asc" id="snosort">&darr;</a>
 					</div>
-					<div class="col-9">
+					<div class="col-10">
 						<h6>Name</h6>
 						<a class="btn sortbutton" href="/index/sorting/name/asc" id="namesort">&darr;</a>
 					</div>
-					<div class="col-15">
+					<div class="col-20">
 						<h6>Address</h6>
 						<a class="btn sortbutton" style="visibility: hidden;"></a>
 					</div>
-					<div class="col-9">
+					<div class="col-12">
 						<h6>Phone Number</h6>
 						<a class="btn sortbutton" href="/index/sorting/phone/asc" id="phonesort">&darr;</a>
 					</div>
-					<div class="col-8">
+					<div class="col-6">
 						<h6>Date Of Birth</h6>
 						<a class="btn sortbutton" href="/index/sorting/dob/asc" id="dobsort">&darr;</a>
 					</div>
-					<div class="col-9">
+					<div class="col-6">
 						<h6>Family Name</h6>
 						<a class="btn sortbutton" href="/index/sorting/familyname/asc" id="familynamesort">&darr;</a>
 					</div>
-					<div class="col-5" style="overflow-x: auto;">
+					<div class="col-3" style="overflow-x: auto;">
 						<h6></h6>
 					</div>
 				</div>
@@ -179,20 +157,20 @@
 					<div class="col-1"></div>
 					<div class="col-58 row rowdata">
 						{% if person.name != "" %}
-							<p class="col-5">{{person.id}}</p>
-							<p class="col-9">{{person.salutation}} {{person.name}}</p>
-							<p class="col-15">{{person.housestreet}},<br>{{person.neighbourhood}},<br>{{person.city}} - {{person.pincode}}<br>{{person.state}}, {{person.country}}</p>
-							<p class="col-9">{{person.phone}}</p>
-							<p class="col-8" id="date{{person.id}}">{{person.dateofbirth}}</p>
+							<p class="col-3">{{person.id}}</p>
+							<p class="col-10">{{person.salutation}} {{person.name}}</p>
+							<p class="col-20">{{person.housestreet}},<br>{{person.neighbourhood}},<br>{{person.city}} - {{person.pincode}}<br>{{person.state}}, {{person.country}}</p>
+							<p class="col-12">{{person.phone}}</p>
+							<p class="col-6" id="date{{person.id}}">{{person.dateofbirth}}</p>
 							<script>
 								var date = "{{person.dateofbirth}}".split("-");
 								document.getElementById("date{{person.id}}").innerHTML = date[2] + "-" + date[1] + "-" + date[0];
 							</script>
-							<p class="col-9">{{person.familyname}}</p>
+							<p class="col-6">{{person.familyname}}</p>
 							{% if (person.salutation + person.name) == session.name and session.filter %}
-								<p class="col-5"><a class="btn btn-default" href="/details/edit">Edit</a></p>
+								<p class="col-3"><a class="btn btn-default" href="/details/edit">Edit</a></p>
 							{% else %}
-								<p class="col-5"></p>
+								<p class="col-3"></p>
 							{% endif %}
 						{% endif %}
 					</div>
@@ -202,32 +180,18 @@
 			{% endfor %}
 		</div>
 		<div align="right">
-			<a href="#showpdfname" data-toggle="tab" onclick="showPdfName()" class="btn btn-warning">Print Page</a><!--Show enter name-->
-		</div>
-		<div id="pdfname" style="display: none;">
-			<form action="/printpage" method="POST" id="pdfform">
-				<input type="hidden" name="deviceinfor" id="deviceinfo">
-				<div class="form-group">
-					<h4>Enter File Name</h4>
-					<input type="text" name="filename" style="width: 100%;">
-				</div>
-				<div class="form-group text-center">
-					<button type="submit" class="btn btn-success" onclick="detectDevice()" value="Submit">Submit</button>
-				</div>
-				<div class="text-center">
-					<a class="btn btn-default" onclick="hidePdfName()">Cancel</a>
-				</div>
-			</form>
 		</div>
 		<script>
 			if (navigator.userAgent.match(/Android/i) || navigator.userAgent.match(/webOS/i) || navigator.userAgent.match(/iPhone/i) || navigator.userAgent.match(/iPad/i) || navigator.userAgent.match(/iPod/i) || navigator.userAgent.match(/BlackBerry/i) || navigator.userAgent.match(/Windows Phone/i)) {
-				alert("Please turn your device to the side to view the table clearly");
+				if (screen.width < "768px") {
+					alert("Please turn your device to the side to view the table clearly");
+				}
 			}
 			var x = location.pathname.split("/");
 			if (x[3] == undefined) {
 				document.getElementById("default").text = "";
 			} else {
-				sortingOption(x[3], x[4]);
+				filterSelection(x[3], x[4]);
 			}
 			if ("{{session.sortby}}" == "asc") {
 				if ("{{session.sortid}}" == "default") {
@@ -247,7 +211,11 @@
 					document.getElementById("familynamesort").href = "/index/sorting/familyname/desc";
 				}
 			}
-			function sortingOption(value, rowvalue) {
+			function showFilterInput(elementid) {
+				document.getElementById(elementid).style.display = "block";
+				document.getElementById("formsubmitbutton").style.display = "block";
+			}
+			function filterSelection(value, rowvalue) {
 				if (value == "Name") {
 					document.getElementById("default").text = "Remove Filter";
 					document.getElementById("personname").selected = true;
@@ -314,19 +282,6 @@
 					var rowvalue = document.getElementById("familyvalue").value;
 					document.getElementById("formsubmitbutton").children.item(0).href = "/index/filter/FamilyName/" + rowvalue;
 				}
-			}
-			function showPdfName() {
-				document.getElementById("pdfname").style.display = "block";
-			}
-			function detectDevice() {
-				if(navigator.userAgent.match(/Android/i) || navigator.userAgent.match(/webOS/i) || navigator.userAgent.match(/iPhone/i) || navigator.userAgent.match(/iPad/i) || navigator.userAgent.match(/iPod/i) || navigator.userAgent.match(/BlackBerry/i) || navigator.userAgent.match(/Windows Phone/i)) {
-					document.getElementById("deviceinfo").value = "phone";
-				} else {
-					document.getElementById("deviceinfo").value = "notphone"
-				}
-			}
-			function hidePdfName() {
-				document.getElementById("pdfname").style.display = "none";
 			}
 		</script>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>

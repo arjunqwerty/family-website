@@ -7,7 +7,7 @@
 		<link rel="icon" type="image/png" href="/static/Favicon.png">
 		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity = "sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin = "anonymous">
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-        <link rel="stylesheet" href="/static/sixtyfoldcoloum.css">
+        <link rel="stylesheet" href="/static/css/sixtyfoldcoloum.css">
 		<style>
 			.btnstretch {
 				width: 100%;
@@ -141,7 +141,7 @@
 							</div>
 							<div class="col-xs-60 col-sm-60 col-md-60 col-lg-10 col-xl-10">
 								<select id="selectcountry" name="country" onchange="showState()" style="margin-right: -4px;">
-									<option hidden>Country</option>
+									<option value="" hidden>Country</option>
 									{% for country in country %}
 										<option value="{{country[1]}} | {{country[0]}}">{{country[1]}}</option>
 									{% endfor %}
@@ -149,13 +149,13 @@
 							</div>
 							<div class="col-xs-60 col-sm-60 col-md-60 col-lg-10 col-xl-10">
 								<select id="selectstate" name="state" onchange="showCity()" style="margin-right: -4px;">
-									<option hidden>State</option>
+									<option value="" hidden>State</option>
 									<option value="">Select Country</option>
 								</select>
 							</div>
 							<div class="col-xs-60 col-sm-60 col-md-60 col-lg-10 col-xl-10">
 								<select id="selectcity" name="city" style="margin-right: -4px;">
-									<option hidden>City</option>
+									<option value="" hidden>City</option>
 									<option value="">Select State</option>
 								</select>
 							</div>

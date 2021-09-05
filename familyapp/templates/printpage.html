@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>TKR Relatives</title>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+        <link rel="stylesheet" href="/static/css/sixtyfoldcoloum.css">
+		<style>
+            p {
+                font-family: Arial, Helvetica, sans-serif;
+                font-size: 24px;
+            }
+			.row {
+				margin-left: 0px;
+				margin-right: 0px;
+			}
+			.rowdata {
+				padding-left: 0px;
+				padding-right: 0px;
+			}
+		</style>
+    </head>
+    <body>
+		<div id="backbutton" align="right">
+		</div>
+		<div id="tobeprinted">
+			<div class="row">
+				<h1 class="col-60 text-center">TK Renganathan Relatives</h1>
+			</div>
+			<div style="width: 100%;">
+				<hr style="margin: 0px; padding: 0px;">
+				{% for person in data %}
+					<div class="row">
+						<div class="col-60 row rowdata" style="margin-bottom: 0px;">
+							<p class="col-15" style="margin-top: 5px; margin-bottom: 5px;">{{person.salutation}}{{person.name}}</p>
+							<p class="col-30" style="margin-top: 5px; margin-bottom: 5px;" id="{{person.name}}">{{person.phone}}</p>
+							<script>
+								var list = "{{person.phone}}".split(", ");
+								var phonephone = list[0].split(" ");
+								var alteredPhone = phonephone[0] + phonephone[1];
+								for (let i = 1; i < list.length; i++) {
+									var phonesplit = list[i].split(" ");
+									alteredPhone = alteredPhone + ", " + phonesplit[0] + phonesplit[1];
+								}
+								document.getElementById("{{person.name}}").innerHTML = "Phone: " + alteredPhone;
+							</script>
+							<p class="col-15" style="margin-top: 5px; margin-bottom: 5px;" align="right">Family: {{person.familyname}}</p>
+						</div>
+						<div class="col-60 row rowdata" style="margin-top: 0px;">
+							<p class="col-60">{{person.housestreet}},<br>{{person.neighbourhood}},<br>{{person.city}} - {{person.pincode}}<br>{{person.state}}, {{person.country}}</p>
+						</div>
+					</div>
+					<hr style="margin: 0px; padding: 0px;">
+				{% endfor %}
+			</div>
+		</div>
+		<script>
+            window.onload = function() {
+                window.print();
+            }
+			if (navigator.userAgent.match(/Android/i) || navigator.userAgent.match(/webOS/i) || navigator.userAgent.match(/iPhone/i) || navigator.userAgent.match(/iPad/i) || navigator.userAgent.match(/iPod/i) || navigator.userAgent.match(/BlackBerry/i) || navigator.userAgent.match(/Windows Phone/i)) {
+				var back = document.createElement("a");
+				back.setAttribute("href", "/index/filter/{{session.filtercoloumn}}/{{session.filterrowval}}");
+				back.setAttribute("class", "btn btn-primary");
+				back.innerHTML = "Back";
+				document.getElementById("backbutton").appendChild(back);
+			} else {
+				window.onafterprint = function() {
+					window.location.replace("/index/filter/{{session.filtercoloumn}}/{{session.filterrowval}}");
+				}
+			}
+		</script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+        <script src="https://code.jquery.com/jquery-15.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    </body>
+</html>
