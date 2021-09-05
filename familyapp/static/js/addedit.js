@@ -10,7 +10,6 @@ function eraseoptions(elementid, check) {
     var options = document.getElementById(elementid);
     i = 1;
     while (i < options.length) {
-        var num =  options.length
         options.removeChild(options.lastElementChild);
     }
     if (elementid === "selectcity" && check ==="1") {

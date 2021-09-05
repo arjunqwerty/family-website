@@ -37,3 +37,6 @@ input {
 .btn-default {
     border: 1px solid #000;
 }
+#addressrow div {
+    padding-right: 0px;
+}

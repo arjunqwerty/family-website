@@ -1,0 +1,57 @@
+.btnstretch {
+    width: 100%;
+    height: 35px;
+}
+.btn-default {
+    border: 1px solid #000;
+}
+.sortbutton {
+    display: initial;
+    width: 5px;
+    padding: 5px;
+}
+select {
+    width: 55%;
+    height: 35px;
+}
+@media (max-width:768px) {
+    html, body {
+        font-size: 7px;
+    }
+    select {
+        height: 15px;
+    }
+}
+@media (min-width:768px) and (max-width:991px) {
+    html, body {
+        font-size: x-small;
+    }
+    select {
+        height: 20px;
+    }
+}
+.row {
+    margin-left: 0px;
+    margin-right: 0px;
+}
+.rowheading {
+    padding-left: 0px;
+    padding-right: 0px;
+}
+.rowheading div {
+    white-space: nowrap;
+}
+.rowheading div h6, .rowheading div p {
+    display: inline-block;
+    padding-top: 5px;
+}
+.rowdata {
+    padding-left: 0px;
+    padding-right: 0px;
+}
+.rowdata p {
+    margin-top: 10px;
+}
+h6 {
+    font-weight: bolder;
+}

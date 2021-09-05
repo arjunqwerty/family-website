@@ -89,7 +89,7 @@ def register():
 @app.route("/", methods = ["GET", "POST"])
 @app.route("/login", methods = ["GET", "POST"])
 def home():
-    session["maintenance"] = "maintain" #maintain (or) production
+    session["maintenance"] = "maintaine`" #maintain (or) production
     if request.method == "POST":
         peoplename = request.form["name"]
         password = request.form["password"]

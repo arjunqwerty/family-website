@@ -7,65 +7,7 @@
         <title>TKR Relatives</title>
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
         <link rel="stylesheet" href="/static/css/sixtyfoldcoloum.css">
-		<style>
-			.btnstretch {
-				width: 100%;
-				height: 35px;
-			}
-			.btn-default {
-				border: 1px solid #000;
-			}
-			.sortbutton {
-				display: initial;
-				width: 5px;
-				padding: 5px;
-			}
-			select {
-				width: 55%;
-				height: 35px;
-			}
-			@media (max-width:768px) {
-				html, body {
-					font-size: 7px;
-				}
-				select {
-					height: 15px;
-				}
-			}
-			@media (min-width:768px) and (max-width:991px) {
-				html, body {
-					font-size: x-small;
-				}
-				select {
-					height: 20px;
-				}
-			}
-			.row {
-				margin-left: 0px;
-				margin-right: 0px;
-			}
-			.rowheading {
-				padding-left: 0px;
-				padding-right: 0px;
-			}
-			.rowheading div {
-				white-space: nowrap;
-			}
-			.rowheading div h6, .rowheading div p {
-				display: inline-block;
-				padding-top: 5px;
-			}
-			.rowdata {
-				padding-left: 0px;
-				padding-right: 0px;
-			}
-			.rowdata p {
-				margin-top: 10px;
-			}
-			h6 {
-				font-weight: bolder;
-			}
-		</style>
+        <link rel="stylesheet" href="/static/css/index.css">
     </head>
     <body>
         {% include "_navbar.html" %}
@@ -181,6 +123,7 @@
 		</div>
 		<div align="right">
 		</div>
+		<script src="/static/js/index.js"></script>
 		<script>
 			if (navigator.userAgent.match(/Android/i) || navigator.userAgent.match(/webOS/i) || navigator.userAgent.match(/iPhone/i) || navigator.userAgent.match(/iPad/i) || navigator.userAgent.match(/iPod/i) || navigator.userAgent.match(/BlackBerry/i) || navigator.userAgent.match(/Windows Phone/i)) {
 				if (screen.width < "768px") {
@@ -209,78 +152,6 @@
 				} else if ("{{session.sortid}}" == "familyname") {
 					document.getElementById("familynamesort").innerHTML = "&uarr;";
 					document.getElementById("familynamesort").href = "/index/sorting/familyname/desc";
-				}
-			}
-			function showFilterInput(elementid) {
-				document.getElementById(elementid).style.display = "block";
-				document.getElementById("formsubmitbutton").style.display = "block";
-			}
-			function filterSelection(value, rowvalue) {
-				if (value == "Name") {
-					document.getElementById("default").text = "Remove Filter";
-					document.getElementById("personname").selected = true;
-					document.getElementById("selectaddress").style.display = "none";
-					document.getElementById("selectfamily").style.display = "none";
-					document.getElementById("inputname").style.display = "block";
-					document.getElementById("formsubmitbutton").style.display = "block";
-					document.getElementById("namevalue").focus();
-					if (rowvalue != "none"){
-						count = (rowvalue.match(/%20/g) || []).length;
-						for (let j = 0; j < count; j++) {
-							rowvalue = rowvalue.replace("%20", " ");
-						}
-						document.getElementById("namevalue").value = rowvalue;
-					}
-				} else if (value == "Address") {
-					document.getElementById("default").text = "Remove Filter";
-					document.getElementById("address").selected = true;
-					document.getElementById("inputname").style.display = "none";
-					document.getElementById("selectfamily").style.display = "none";
-					document.getElementById("selectaddress").style.display = "block";
-					document.getElementById("formsubmitbutton").style.display = "block";
-					for (let i = 0; i < document.getElementById("selectaddress").children.item(1).children.length; i++) {
-						if (document.getElementById("selectaddress").children.item(1).children.item(i).value === rowvalue) {
-							document.getElementById("selectaddress").children.item(1).children.item(i).selected = true;
-						}
-					}
-				} else if (value == "FamilyName") {
-					document.getElementById("default").text = "Remove Filter";
-					document.getElementById("family").selected = true;
-					document.getElementById("inputname").style.display = "none";
-					document.getElementById("selectaddress").style.display = "none";
-					document.getElementById("selectfamily").style.display = "block";
-					document.getElementById("formsubmitbutton").style.display = "block";
-					for (let i = 0; i < document.getElementById("selectfamily").children.item(1).children.length; i++) {
-						if (document.getElementById("selectfamily").children.item(1).children.item(i).value === rowvalue) {
-							document.getElementById("selectfamily").children.item(1).children.item(i).selected = true;
-						}
-					}
-				} else {
-					document.getElementById("default").text = "";
-					document.getElementById("default").selected = true;
-					document.getElementById("inputname").style.display = "none";
-					document.getElementById("selectaddress").style.display = "none";
-					document.getElementById("selectfamily").style.display = "none";
-					document.getElementById("formsubmitbutton").style.display = "none";
-					if (location.pathname != "/index") {
-						location.pathname = "/index/filter/default/default";
-					}
-				}
-			}
-			function filteringOption() {
-				if (document.getElementById("sorting").children.item(1).selected == true) {
-					var rowvalue = document.getElementById("namevalue").value;
-					if (rowvalue.length == 0) {
-						document.getElementById("formsubmitbutton").children.item(0).href = "/index";
-					} else {
-						document.getElementById("formsubmitbutton").children.item(0).href = "/index/filter/Name/" + rowvalue;
-					}
-				} else if (document.getElementById("sorting").children.item(2).selected == true) {
-					var rowvalue = document.getElementById("addressvalue").value;
-					document.getElementById("formsubmitbutton").children.item(0).href = "/index/filter/Address/" + rowvalue;
-				} else if (document.getElementById("sorting").children.item(3).selected == true) {
-					var rowvalue = document.getElementById("familyvalue").value;
-					document.getElementById("formsubmitbutton").children.item(0).href = "/index/filter/FamilyName/" + rowvalue;
 				}
 			}
 		</script>
