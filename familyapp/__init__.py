@@ -3,7 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 
-env = "dev"
+env = "prod"
 if env == "dev":
     app.debug = True
     app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://postgres:Postgre-arj4703@localhost/familydatabase"
