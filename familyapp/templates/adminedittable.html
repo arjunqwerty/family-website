@@ -73,6 +73,9 @@
 		{% endif %}
 
 		{% if session.editnumber == "2" %}
+			<input type="text" id="stateslist" style="display: none;" value="{{states}}">
+			<input type="text" id="citieslist" style="display: none;" value="{{cities}}">
+			<input type="text" id="phonecodelist" style="display: none;" value="{{phonecode}}">
 			<form action="/admin/table/row/edit/2/{{familydet.id}}" method="POST">
 				<h1>Family Details</h1>
 				<div class="row">
@@ -123,7 +126,10 @@
 					</div>
 					<div id="phone" class="form-group col-xs-60 col-sm-60 col-md-60 col-lg-15 col-xl-15"><!--phone-->
 						<h4>Phone Number :</h4>
-						<input type="text" class="text" style="display: none;" name="phone" value="{{familydet.phone}}" readonly>
+						<div id="extraphone2">
+							<input type="text" name="phone" value="" style="display: none;">
+							<a href="#addphonenum" class="btn btn-default" data-toggle="tab" onclick="showPhoneInput()">Add Phone Number</a>
+						</div>
 					</div>
 					<div id="datetime" class="form-group col-xs-60 col-sm-60 col-md-60 col-lg-15 col-xl-15">
 						<h4>Date of Birth :</h4>
@@ -152,21 +158,13 @@
 			<div class="text-center">
 				<a href="/admin/table/row/edit/2/chooserow" class="btn btn-default btnstretch">Back</a>
 			</div>
+			<script src="/static/js/addedit.js"></script>
 			<script>
 				var selectsalute = document.getElementById("salute");
 				for (let i = 0; i < selectsalute.length; i++) {
 					if (selectsalute.options[i].value == "{{familydet.salutation}}") {
 						selectsalute.options[i].selected = true;
 					}
-				}
-				var list = document.getElementById("phone").children.item(1).value.split(", ");
-				for (let index = 0; index < (list.length); index++) {
-					var x = document.createElement("INPUT");
-					x.setAttribute("class", "text");
-					x.setAttribute("type", "text");
-					x.setAttribute("value", list[index]);
-					x.setAttribute("style", "width: 50%;")
-					document.getElementById("phone").appendChild(x);
 				}
 				var selectedcountry = document.getElementById("selectcountry");
 				for (let i = 0; i < selectedcountry.length; i++) {
@@ -188,82 +186,14 @@
 						selectedcity.options[i].selected = true;
 					}
 				}
+				var list = "{{familydet.phone}}".split(", ");
+				for (let i = 0; i < list.length; i++) {
+					showPhoneInput(list[i]);
+				}
 				var selectedfamily = document.getElementById("selectfamily");
 				for (let i = 0; i < selectedfamily.length; i++) {
 					if (selectedfamily.options[i].text == "{{familydet.familyname}}") {
 						selectedfamily.options[i].selected = true;
-					}
-				}
-				function eraseoptions(elementid, check) {
-					var options = document.getElementById(elementid);
-					i = 2;
-					while (i < options.length) {
-						var num =  options.length
-						options.removeChild(options.lastElementChild);
-					}
-					if (elementid === "selectcity" && check ==="1") {
-						var a = document.createElement("option");
-						a.setAttribute("value", "");
-						a.innerHTML = "Select State";
-						options.appendChild(a);
-						}
-					}
-				function showState() {
-					eraseoptions("selectstate", "2");
-					eraseoptions("selectcity", "1");
-					thist = document.getElementById("selectcountry");
-					var country = thist.options[thist.selectedIndex].value;
-					var countryid = country.split(" | ")[1];
-					var states = "{{states}}".split("[");
-					for (let i = 2; i < states.length; i++) {
-						var coloumns = states[i].replace("],",'').split(",");
-						if (coloumns[0] == countryid) {
-							var statename = coloumns[2].replace("&#39;","");
-							var statename = statename.replace("&#39;","");
-							var statevalue = [statename, "|", coloumns[1]];
-							var x = document.createElement("option");
-							x.setAttribute("value", statevalue.join(""));
-							var z = document.createTextNode(statename);
-							x.appendChild(z);
-							document.getElementById("selectstate").appendChild(x);
-						}
-					}
-				}
-				function showCity() {
-					eraseoptions("selectcity", "2");
-					thist = document.getElementById("selectstate");
-					var state = thist.options[thist.selectedIndex].value;
-					var stateid = state.split(" | ")[1];
-					var cities = "{{cities}}".split("[");
-					for (let i = 2; i < cities.length; i++) {
-						var coloumns = cities[i].replace("],",'').split(",");
-						if (coloumns[0] == stateid) {
-							var cityname = coloumns[2].replace("&#39;","");
-							var cityname = cityname.replace("&#39;","");
-							var x = document.createElement("option");
-							x.setAttribute("value", cityname);
-							var z = document.createTextNode(cityname);
-							x.appendChild(z);
-							document.getElementById("selectcity").appendChild(x);
-						}
-					}
-				}
-				function phoneNumberCollect() {
-					var phoneParent = document.getElementById("phone");
-					var last = phoneParent.children.length;
-					var combinedphone = phoneParent.children.item(2).value;
-					for (let index = 3; index < last; index++) {
-						if (phoneParent.children.item(index).value != "") {
-							combinedphone = combinedphone + ", " + phoneParent.children.item(index).value;
-						}
-					}
-					document.getElementById("phone").children.item(1).value = combinedphone;
-				}
-				function showOtherInput(event) {
-					if (this.options[this.selectedIndex].text == "Other") {
-						document.getElementById("otherinput").style.display = "block";
-					} else {
-						document.getElementById("otherinput").style.display = "none";
 					}
 				}
 			</script>

@@ -686,25 +686,6 @@ def showrelations(relationname):
     relation = db.session.query(Relation).filter(Relation.name == relationname).all()
     return render_template("adminrelation.html", relation = relation)
 
-@app.route("/admin/relation/add", methods = ["GET", "POST"])
-@is_admin
-def addrelations():
-    if request.method == "POST":
-        name = request.form["name"]
-        if name == "Other":
-            name = request.form["personother"]
-        spouse = request.form["spouse"]
-        father = request.form["father"]
-        mother = request.form["mother"]
-        children = request.form["children"]
-        siblings = request.form["siblings"]
-        userid = db.session.query(FamilyDetails).filter(FamilyDetails.name == name).first().id
-        data = Relation(userid, name, spouse, father, mother, children, siblings)
-        db.session.add(data)
-        db.session.commit()
-        return redirect(url_for("relation"))
-    return render_template("adminrelationadd.html", person = db.session.query(FamilyDetails.name).order_by(FamilyDetails.name).all())
-
 @app.route("/admin/relation/edit/<number>", methods = ["GET", "POST"])
 def editrelation(number):
     if request.method == "POST":

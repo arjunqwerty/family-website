@@ -58,10 +58,6 @@
 		</form>
 		<script src="/static/js/addedit.js"></script>
 		<script>
-			var list = "{{profile.phone}}".split(", ");
-			for (let i = 0; i < list.length; i++) {
-				showPhoneInput(list[i]);
-			}
 			var selectedcountry = document.getElementById("selectcountry");
 			for (let i = 0; i < selectedcountry.length; i++) {
 				if (selectedcountry.options[i].text == "{{profile.country}}"){
@@ -81,6 +77,10 @@
 				if (selectedcity.options[i].text == "{{profile.city}}") {
 					selectedcity.options[i].selected = true;
 				}
+			}
+			var list = "{{profile.phone}}".split(", ");
+			for (let i = 0; i < list.length; i++) {
+				showPhoneInput(list[i]);
 			}
 		</script>
 		<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
