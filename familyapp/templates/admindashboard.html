@@ -29,13 +29,13 @@
                 <td><a href="/admin/table/display/3" class="btn btn-default btnstretch">Family Name</a></td>
                 <td><a href="/admin/table/display/All" class="btn btn-default btnstretch">All</a></td>
             </tr>
-            <tr>
+            <!--<tr>
                 <td>Delete/Default Table</td>
-                <td><a href="/admin/table/delete/1" class="btn btn-danger btnstretch">Register</a></td>
-                <td><a href="/admin/table/delete/2" class="btn btn-danger btnstretch">Details</a></td>
-                <td><a href="/admin/table/delete/3" class="btn btn-danger btnstretch">Family Name</a></td>
-                <td><a href="/admin/table/delete/All" class="btn btn-danger btnstretch">All</a></td>
-            </tr>
+                <td><a href="" class="btn btn-danger btnstretch" onclick="confirmDelete('1')">Register</a></td>
+                <td><a href="" class="btn btn-danger btnstretch" onclick="confirmDelete('2')">Details</a></td>
+                <td><a href="" class="btn btn-danger btnstretch" onclick="confirmDelete('3')">Family Name</a></td>
+                <td><a href="" class="btn btn-danger btnstretch" onclick="confirmDelete('All')">All</a></td>
+            </tr>-->
             <tr>
                 <td>Delete Table Rows</td>
                 <td><a href="/admin/table/row/delete/1/chooserow" class="btn btn-default btnstretch">Register</a></td>
@@ -61,7 +61,18 @@
                 <td colspan="2"><a href="/admin/approval/none/none" class="btn btn-default btnstretch">Approval</a></td>
                 <td colspan="2"><a href="/index/filter/default/default" class="btn btn-default btnstretch">Index</a></td>
             </tr>
+            <tr>
+                <td><a href="/admin/table/extraadd" class="btn btn-default btnstretch">Extratable</a></td>
+            </tr>
         </table>
+        <script>
+            function confirmDelete(tablename) {
+                var r = confirm("ARE YOU SURE ??????");
+                if (r == true) {
+                    window.location.replace("/admin/table/delete" + tablename);
+                }
+            }
+        </script>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
         <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>

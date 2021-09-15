@@ -32,17 +32,16 @@
 			<div style="width: 100%;">
 				<hr style="margin: 0px; padding: 0px;">
 				{% for person in data %}
+					{% if person.name != "" %}
 					<div class="row">
 						<div class="col-60 row rowdata" style="margin-bottom: 0px;">
 							<p class="col-15" style="margin-top: 5px; margin-bottom: 5px;">{{person.salutation}}{{person.name}}</p>
 							<p class="col-30" style="margin-top: 5px; margin-bottom: 5px;" id="{{person.name}}">{{person.phone}}</p>
 							<script>
 								var list = "{{person.phone}}".split(", ");
-								var phonephone = list[0].split(" ");
-								var alteredPhone = phonephone[0] + phonephone[1];
+								var alteredPhone = list[0];
 								for (let i = 1; i < list.length; i++) {
-									var phonesplit = list[i].split(" ");
-									alteredPhone = alteredPhone + ", " + phonesplit[0] + phonesplit[1];
+									alteredPhone = alteredPhone + ", " + list[i];
 								}
 								document.getElementById("{{person.name}}").innerHTML = "Phone: " + alteredPhone;
 							</script>
@@ -53,6 +52,7 @@
 						</div>
 					</div>
 					<hr style="margin: 0px; padding: 0px;">
+					{% endif %}	
 				{% endfor %}
 			</div>
 		</div>

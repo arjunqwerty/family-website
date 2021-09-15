@@ -64,10 +64,6 @@
 			<div class="row" style="background-color: lightsalmon;">
 				<div class="col-1"></div>
 				<div class="col-58 row rowheading" style="padding-top: 10px; padding-bottom: 10px;"><!--Sorting-->
-					<div class="col-3">
-						<h6>S.No</h6>
-						<a class="btn sortbutton" href="/index/sorting/default/asc" id="snosort">&darr;</a>
-					</div>
 					<div class="col-10">
 						<h6>Name</h6>
 						<a class="btn sortbutton" href="/index/sorting/name/asc" id="namesort">&darr;</a>
@@ -84,22 +80,21 @@
 						<h6>Date Of Birth</h6>
 						<a class="btn sortbutton" href="/index/sorting/dob/asc" id="dobsort">&darr;</a>
 					</div>
-					<div class="col-6">
+					<div class="col-8">
 						<h6>Family Name</h6>
 						<a class="btn sortbutton" href="/index/sorting/familyname/asc" id="familynamesort">&darr;</a>
 					</div>
-					<div class="col-3" style="overflow-x: auto;">
+					<div class="col-4" style="overflow-x: auto;">
 						<h6></h6>
 					</div>
 				</div>
 				<div class="col-1"></div>
 			</div>
 			{% for person in data %}
-				<div class="row">
-					<div class="col-1"></div>
-					<div class="col-58 row rowdata">
-						{% if person.name != "" %}
-							<p class="col-3">{{person.id}}</p>
+				{% if person.name != "" %}
+					<div class="row">
+						<div class="col-1"></div>
+						<div class="col-58 row rowdata">
 							<p class="col-10">{{person.salutation}} {{person.name}}</p>
 							<p class="col-20">{{person.housestreet}},<br>{{person.neighbourhood}},<br>{{person.city}} - {{person.pincode}}<br>{{person.state}}, {{person.country}}</p>
 							<p class="col-12">{{person.phone}}</p>
@@ -114,11 +109,11 @@
 							{% else %}
 								<p class="col-3"></p>
 							{% endif %}
-						{% endif %}
+						</div>
+						<div class="col-1"></div>
 					</div>
-					<div class="col-1"></div>
-				</div>
-				<hr style="margin: 0px; padding: 0px;">
+					<hr style="margin: 0px; padding: 0px;">
+				{% endif %}
 			{% endfor %}
 		</div>
 		<div align="right">

@@ -89,46 +89,50 @@ def register():
 @app.route("/", methods = ["GET", "POST"])
 @app.route("/login", methods = ["GET", "POST"])
 def home():
-    session["maintenance"] = "maintaine`" #maintain (or) production
-    if request.method == "POST":
-        peoplename = request.form["name"]
-        password = request.form["password"]
-        if peoplename == "Admin":
-            if password == "Admin":
-                session["admin"] = True
-                session["logged_in"] = True
-                session["userid"] = "1"
-                session["sortid"] = ""
-                session["sortby"] = "asc"
-                return redirect(url_for("admindashboard"))
-            else:
-                flash("Don't try to get into Administration", "danger")
-                return redirect(url_for("home"))
-        else:
-            if db.session.query(RegisterDetails).filter(RegisterDetails.name == peoplename).count() == 0:
-                flash("No such username exists", "danger")
-                return render_template("login.html")
-            else:
-                user = db.session.query(RegisterDetails).filter(RegisterDetails.name == peoplename).first()
-                if user.approval == "Approved":
-                    if password ==  user.password:
-                        session["logged_in"] = True
-                        session["username"] = peoplename
-                        session["userid"] = user.id
-                        session["sortid"] = ""
-                        session["sortby"] = "asc"
-                        flash("You are logged in", "success")
-                        return redirect(url_for("index"))
-                    else:
-                        flash("Incorrect password", "danger")
-                        return render_template("login.html")
+    try:
+        if session["logged_in"]:
+            return redirect(url_for("index"))
+    except:
+        #session["maintenance"] = "maintain" maintain (or) production
+        if request.method == "POST":
+            peoplename = request.form["name"]
+            password = request.form["password"]
+            if peoplename == "Admin":
+                if password == "Admin":
+                    session["admin"] = True
+                    session["logged_in"] = True
+                    session["userid"] = "1"
+                    session["sortid"] = ""
+                    session["sortby"] = "asc"
+                    return redirect(url_for("admindashboard"))
                 else:
-                    flash("Please wait for admin approval", "danger")
-                    flash("Contact T R Murali - 9952099044 or T M Arjun - 9489826248", "info")
+                    flash("Don't try to get into Administration", "danger")
+                    return redirect(url_for("home"))
+            else:
+                if db.session.query(RegisterDetails).filter(RegisterDetails.name == peoplename).count() == 0:
+                    flash("No such username exists", "danger")
                     return render_template("login.html")
-    else:
-        lstphonecodes = getbinarydat("phonecode.dat")
-        return render_template("login.html", phonecodes = lstphonecodes)
+                else:
+                    user = db.session.query(RegisterDetails).filter(RegisterDetails.name == peoplename).first()
+                    if user.approval == "Approved":
+                        if password ==  user.password:
+                            session["logged_in"] = True
+                            session["username"] = peoplename
+                            session["userid"] = user.id
+                            session["sortid"] = ""
+                            session["sortby"] = "asc"
+                            flash("You are logged in", "success")
+                            return redirect(url_for("index"))
+                        else:
+                            flash("Incorrect password", "danger")
+                            return render_template("login.html")
+                    else:
+                        flash("Please wait for admin approval", "danger")
+                        flash("Contact T R Murali - 9952099044 or T M Arjun - 9489826248", "info")
+                        return render_template("login.html")
+        else:
+            lstphonecodes = getbinarydat("phonecode.dat")
+            return render_template("login.html", phonecodes = lstphonecodes)
 
 @app.route("/index", methods = ["GET", "POST"]) 
 @is_logged_in
@@ -367,39 +371,44 @@ def adddetails():
 @app.route("/details/edit", methods = ["GET", "POST"])
 def editdetails():
     identifier = session["userid"]
-    if request.method == "POST":
-        people = db.session.query(FamilyDetails).filter(FamilyDetails.id == identifier).first()
-        housest = request.form["housest"]
-        locality = request.form["locality"]
-        country = request.form["country"]
-        country = country[:country.find(" |"):]
-        state = request.form["state"]
-        state = state[:state.find(" |"):].strip(" ")
-        city = request.form["city"].strip(" ")
-        pincode = request.form["pincode"]
-        phone = request.form["phone"]
-        if housest != people.housestreet:
-            people.housestreet = housest
-        if locality != people.neighbourhood:
-            people.neighbourhood = locality
-        if country != people.country:
-            people.country = country
-        if state != people.state:
-            people.state = state
-        if city != people.city:
-            people.city = city
-        if pincode != people.pincode:
-            people.pincode = pincode
-        if phone != people.phone:
-            people.phone = phone
-        db.session.commit()
-        flash("Profile updated", "success")
-        return redirect(url_for("index"))
-    lstcount = getbinarydat("country.dat")
-    lststate = getbinarydat("state.dat")
-    lstcity = getbinarydat("city.dat")
-    lstphone = getbinarydat("phonecode.dat")
-    return render_template("editdetails.html", profile = db.session.query(FamilyDetails).filter(FamilyDetails.id == identifier).first(), country = lstcount, states = lststate, cities = lstcity, phonecode = lstphone)
+    person = db.session.query(FamilyDetails).filter(FamilyDetails.id == identifier).first()
+    if person.name == "" or person.housestreet == "" or person.neighbourhood == "" or person.city == "" or person.state == "" or person.pincode == "" or person.phone == "" or person.dateofbirth == "" or person.familyname == "":
+        flash("Please enter the details", "danger")
+        return redirect(url_for("adddetails"))
+    else:
+        if request.method == "POST":
+            people = db.session.query(FamilyDetails).filter(FamilyDetails.id == identifier).first()
+            housest = request.form["housest"]
+            locality = request.form["locality"]
+            country = request.form["country"]
+            country = country[:country.find(" |"):]
+            state = request.form["state"]
+            state = state[:state.find(" |"):].strip(" ")
+            city = request.form["city"].strip(" ")
+            pincode = request.form["pincode"]
+            phone = request.form["phone"]
+            if housest != people.housestreet:
+                people.housestreet = housest
+            if locality != people.neighbourhood:
+                people.neighbourhood = locality
+            if country != people.country:
+                people.country = country
+            if state != people.state:
+                people.state = state
+            if city != people.city:
+                people.city = city
+            if pincode != people.pincode:
+                people.pincode = pincode
+            if phone != people.phone:
+                people.phone = phone
+            db.session.commit()
+            flash("Profile updated", "success")
+            return redirect(url_for("index"))
+        lstcount = getbinarydat("country.dat")
+        lststate = getbinarydat("state.dat")
+        lstcity = getbinarydat("city.dat")
+        lstphone = getbinarydat("phonecode.dat")
+        return render_template("editdetails.html", profile = db.session.query(FamilyDetails).filter(FamilyDetails.id == identifier).first(), country = lstcount, states = lststate, cities = lstcity, phonecode = lstphone)
 
 @app.route("/printpage", methods = ["GET", "POST"])
 def printpdf():
@@ -654,7 +663,7 @@ def deletetablerow(deleterownumber, identifier):
         flash("No such table exists", "danger")
         return redirect(url_for("admindashboard"))
 
-@app.route("/admin/table/delete/<number>", methods = ["GET", "POST"])
+'''@app.route("/admin/table/delete/<number>", methods = ["GET", "POST"])
 @is_admin
 def deletetables(number):
     if number == "All":
@@ -675,7 +684,7 @@ def deletetables(number):
         flash("No such table exists", "danger")
         return redirect(url_for("admindashboard"))
     return redirect(url_for("admindashboard"))
-
+'''
 @app.route("/admin/relation", methods = ["GET", "POST"])
 @is_admin
 def relation():
@@ -711,6 +720,18 @@ def editrelation(number):
         db.session.commit()
         return redirect(url_for("relation"))
     return render_template("adminrelationedit.html", person = db.session.query(FamilyDetails.name).order_by(FamilyDetails.name).all(), relationdet = db.session.query(Relation).filter(Relation.id == number).first())
+
+@app.route("/admin/table/extraadd", methods = ["GET", "POST"])
+@is_admin
+def extradetailsadd():
+    if request.method == "POST":
+        id = request.form["id"]
+        phone = request.form["phone"]
+        famdet = FamilyDetails(id, "", "", "2000-01-01", "", "", "", "", "", "", phone, "")
+        db.session.add(famdet)
+        db.session.commit()
+        return redirect(url_for("extradetailsadd"))
+    return render_template("dummy.html")
 
 @app.route("/admin/logout")
 @is_admin

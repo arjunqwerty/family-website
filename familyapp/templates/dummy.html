@@ -7,9 +7,27 @@
         <title>TKR Relatives</title>
     </head>
     <body>
-        {{two}}
-        {% for one in two %}
-            {{one}}
-        {% endfor %}
-    </body>
+        <form action="/admin/table/extraadd" method="POST">
+            <h1>Family Details</h1>
+            <div class="row">
+                <div class="form-group"><!--name-->
+                    <h4>Id: </h4>
+                    <input type="text" class="text" name="id">
+                </div>
+                <div id="phone" class="form-group"><!--phone-->
+                    <h4>Phone Number :</h4>
+                    <div>
+                        <input type="text" name="phone" value="">
+                    </div>
+                </div>
+            </div>
+            <div style="text-align: center;">
+                <button type="submit" class="btn btn-primary text-center" value="Submit">Submit</button>
+            </div>
+        </form>
+		<div class="text-center">
+			<a href="/admin/dashboard" class="btn btn-default btnstretch">Back</a>
+		</div>
+		<br>
+</body>
 </html>
