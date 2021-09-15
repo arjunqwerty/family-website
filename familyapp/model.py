@@ -53,7 +53,6 @@ class FamilyNames(db.Model):
 class Relation(db.Model):
     __tablename__ = "relations"
     id = db.Column(db.Integer, primary_key = True)
-    userid = db.Column(db.Integer)
     name = db.Column(db.String(200))
     spouse = db.Column(db.String(200))
     father = db.Column(db.String(200))
@@ -61,8 +60,8 @@ class Relation(db.Model):
     child = db.Column(db.String(200))
     sibling = db.Column(db.String(200))
 
-    def __init__(self, userid, name, spouse, father, mother, child, sibling):
-        self.userid = userid
+    def __init__(self, id, name, spouse, father, mother, child, sibling):
+        self.id = id
         self.name = name
         self.spouse = spouse
         self.father = father
