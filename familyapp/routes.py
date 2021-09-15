@@ -97,8 +97,8 @@ def home():
         if request.method == "POST":
             peoplename = request.form["name"]
             password = request.form["password"]
-            if peoplename == "Admin":
-                if password == "Admin":
+            if peoplename == "Minda":
+                if password == "Minda":
                     session["admin"] = True
                     session["logged_in"] = True
                     session["userid"] = "1"
