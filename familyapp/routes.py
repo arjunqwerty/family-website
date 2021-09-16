@@ -77,13 +77,18 @@ def register():
         phone = request.form["phone"]
         phone = phonecode + " " + phone
         password = request.form["password"]
-        famdet = FamilyDetails("", "", "2000-01-01", "", "", "", "", "", "", phone, "")
-        db.session.add(famdet)
-        data = RegisterDetails(name, phone, password, "")
-        db.session.add(data)
-        db.session.commit()
-        flash("Please wait for approval from admin", "success")
-        return redirect(url_for("home"))
+        if db.session.query(RegisterDetails).filter(RegisterDetails.name == name).count() == 0:
+            famdet = FamilyDetails("", "", "2000-01-01", "", "", "", "", "", "", phone, "")
+            db.session.add(famdet)
+            data = RegisterDetails(name, phone, password, "")
+            db.session.add(data)
+            db.session.commit()
+            flash("Please wait for approval from admin", "success")
+            return redirect(url_for("home"))
+        else:
+            flash("Username already exists", "danger")
+            flash("Try again with another username", "danger")
+            return redirect(url_for("home"))
     return render_template("login.html")
 
 @app.route("/", methods = ["GET", "POST"])
