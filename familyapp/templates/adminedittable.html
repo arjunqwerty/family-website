@@ -200,7 +200,7 @@
 		{% endif %}
 		
 		{% if session.editnumber == "3" %}
-			<form action="/admin/table/row/edit/3/{{familynames.id}}">
+			<form action="/admin/table/row/edit/3/{{familynames.id}}" method="POST">
 				<h1>Family Names Details</h1>
 				<table class="table table-striped">
 					<tr>
@@ -212,7 +212,7 @@
 							<p>{{familynames.id}}</p>
 						</td>
 						<td>
-							<input type="text" value="{{familynames.name}}">
+							<input type="text" name="familyname" value="{{familynames.name}}">
 						</td>
 					</tr>
 				</table>

@@ -614,7 +614,7 @@ def edittableshow(edittablenumber, identifier):
         if identifier != "chooserow":
             if request.method == "POST":
                 familyname = request.form["familyname"]
-                data = db.session.query(FamilyNames).filter(FamilyDetails.id == identifier).first()
+                data = db.session.query(FamilyNames).filter(FamilyNames.id == identifier).first()
                 data.name = familyname
                 db.session.commit()
                 return redirect(url_for("edittableshow", edittablenumber = session["editnumber"], identifier = "chooserow"))
